@@ -1,0 +1,18 @@
+.input-container {
+    display: inline-block;
+    margin: auto;
+    text-align: left;
+}
+
+.input-container label {
+    display: block;
+    padding: 5px 0;
+}
+
+.input-container label:hover {
+    background-color: #8F8;
+}
+
+button {
+    margin-top: 40px;
+}
