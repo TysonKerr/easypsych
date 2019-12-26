@@ -1,5 +1,4 @@
 Stimuli,Trial Type,Text,Settings,Choices,Descriptions,Min,Max
-,survey-website-diagnostics,,,,,,
 2::13,word-list-recall,Please enter some words.,,,,,
 2,word-pair-copy,,,,,,
 2,word-pair-copy-with-tooltip,,,,,,
@@ -16,3 +15,4 @@ Stimuli,Trial Type,Text,Settings,Choices,Descriptions,Min,Max
 14,image,Enjoy the art.,show answer,,,,
 14,image,Enjoy the art.,"show answer, width=200px, height=300px",,,,
 15,audio,"You should hear some audio playing now (if not, check your volume).",,,,,
+,survey-end-of-session,,,,,,

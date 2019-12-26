@@ -1,3 +1,12 @@
+#survey-container {
+    max-width: 725px;
+    margin: auto;
+}
+
+#survey-container p {
+    text-align: left;
+}
+
 .input-container {
     display: inline-block;
     margin: auto;
@@ -13,7 +22,7 @@
     background-color: #8F8;
 }
 
-.question-container:not(:first-child) {
+.question-container {
     display: none;
 }
 
