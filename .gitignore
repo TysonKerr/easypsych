@@ -1,1 +1,5 @@
-data*
+#ignore the data folder and everything inside
+data/*
+
+# ignore file locks created by OpenOffice
+**/.~lock.*
