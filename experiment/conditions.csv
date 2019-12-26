@@ -6,3 +6,4 @@ nested-proc-demo.csv,demo-stim.csv,nested files
 survey-proc.csv,survey-stim.csv,survey
 post-trials-demo.csv,demo-stim.csv,post trials
 demo-multi-session-proc.csv,demo-stim.csv,multi-session
+demo-survey-proc.csv,,surveys

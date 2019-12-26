@@ -1,0 +1,5 @@
+Cue,Trial Type,Text
+,survey-demographics,
+,filter-age,"I'm sorry, but you are not old enough to participate. If you are participating through MTurk, please return the HIT now."
+demo-survey.csv,survey,
+,survey-end-of-session,
