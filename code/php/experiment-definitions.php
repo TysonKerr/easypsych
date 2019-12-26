@@ -79,10 +79,16 @@ function get_exp_data($username, $id) {
     $conditions = get_conditions();
     $condition = $conditions[$metadata['Condition_Index']];
     
+    if (!isset($condition['Stimuli'])) $condition['Stimuli'] = '';
+    
+    $stim = $condition['Stimuli'] === ''
+          ? ['experiment/stimuli/' => []]
+          : get_exp_files('experiment/stimuli/' . $condition['Stimuli']);
+    
     return [
         'condition' => $condition,
         'procedure' => get_exp_files('experiment/procedures/' . $condition['Procedure']),
-        'stimuli'   => get_exp_files('experiment/stimuli/' .    $condition['Stimuli']),
+        'stimuli'   => $stim,
         'responses' => get_responses($username, $metadata['ID_list']),
         'shuffle_seed' => $metadata['Shuffle_Seed']
     ];

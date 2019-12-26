@@ -571,7 +571,7 @@ var CSV = {
     copy_row: function(row) { return Object.assign({}, row); },
     
     shuffle: function(csv, shuffle_seed) {
-        if (!("Shuffle" in csv[0])) return csv; // nothing to shuffle, dont waste time
+        if (!(0 in csv) || !("Shuffle" in csv[0])) return csv; // nothing to shuffle, dont waste time
         
         shuffle_seed = String(shuffle_seed);
         
