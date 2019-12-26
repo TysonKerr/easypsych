@@ -1,0 +1,17 @@
+<p>@{Text}</p>
+
+<div><button>Next</button></div>
+
+<script>
+var context = new AudioContext();
+
+window.fetch(trial.get_value("Cue"))
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => context.decodeAudioData(arrayBuffer))
+    .then(audioBuffer => {
+        let src = context.createBufferSource();
+        src.buffer = audioBuffer;
+        src.connect(context.destination);
+        src.start();
+    });
+</script>

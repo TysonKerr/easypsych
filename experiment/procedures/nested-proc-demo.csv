@@ -1,0 +1,8 @@
+Stimuli,Trial Type,Text,Subfile
+,show-text,starting the subfile demo.,
+,,,nested-proc-1.csv
+,show-text,now we are back in the main proc file,
+,,append: (appended from main file),nested-proc-1.csv
+,show-text,and now a different file,
+add: 2,,prepend: (prepended from main file),nested-proc-2.csv
+,show-text,back to main!,

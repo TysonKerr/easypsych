@@ -1,0 +1,69 @@
+/* General Styling */
+body { background-color: #F7F7FF; }
+
+#survey-container {
+    margin: auto;
+    display: table;
+    border: 1px solid #BBD;
+    border-radius: 4px;
+    max-width: 800px;
+}
+
+.submit-button { margin-top: 50px; }
+
+.standard-question-row {
+    display: table-row;
+    --bgc: white;
+    background-color: var(--bgc);
+}
+
+.standard-question-row > span {
+    display: table-cell;
+    vertical-align: bottom;
+}
+
+.standard-question-row > span:nth-child(1) { text-align: left;  padding: 13px 0px 5px 8px; }
+.standard-question-row > span:nth-child(2) { text-align: right; padding: 13px 8px 5px 46px; }
+
+.standard-question-row:nth-child(even) {
+    --bgc: #EEF;
+}
+
+/* Styling for individual types */
+/* likert */
+.likert-container input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.likert-container label {
+    display: inline-block;
+    width: calc(100% / var(--values));
+    text-align: center;
+    cursor: pointer;
+}
+
+.likert-container span {
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--bgc);
+    border-radius: 20px;
+    display: inline-block;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 25px;
+    padding: 3px;
+}
+
+.likert-container span::after {
+    content: var(--values);
+}
+
+.likert-container label:hover  span {
+    border-color: #0f0;
+}
+
+.likert-container input:checked + span {
+    border-color: green;
+}

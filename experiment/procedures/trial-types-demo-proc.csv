@@ -1,0 +1,17 @@
+Stimuli,Trial Type,Text,Settings,Choices,Descriptions,Min,Max
+2::13,word-list-recall,Please enter some words.,,,,,
+2,word-pair-copy,,,,,,
+2,word-pair-copy-with-tooltip,,,,,,
+"2,3,4",require-ranking,Please rank these by providing each one with a unique value.,,,,,
+2,require-input,Please provide your best guess.,,,,,
+3,require-number-in-range,Please provide a number between -50 and 50.,,,,-50,50
+,likert,How is the weather?,,1::7,"Bad,Neutral,Good",,
+,likert,How is the weather?,,1::7,"Bad,Good",,
+,likert,How is the weather?,,1::7,"Very bad,Somewhat bad,Somewhat good,Very good",,
+,likert,How is the weather?,,1::7,A::G,,
+,likert,Is the weather nice?,,"Yes,No",,,
+,likert,How is the weather?,,"Immeasurably bad,1::5,Too good to be scored","Bad,Good",,
+14,image,Enjoy the art.,,,,,
+14,image,Enjoy the art.,show answer,,,,
+14,image,Enjoy the art.,"show answer, width=200px, height=300px",,,,
+15,audio,"You should hear some audio playing now (if not, check your volume).",,,,,

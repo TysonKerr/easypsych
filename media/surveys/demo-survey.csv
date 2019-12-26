@@ -1,0 +1,8 @@
+Name,Type,Values,Question
+Wellbeing,textbox,,How are you?
+Weather,textbox,,How's the weather? 
+Tired,likert,1::3,how tired are you?
+Fun,likert,1::3,how much fun is this?
+More,textbox,,more text
+Final,textbox,,final question
+Ready,likert,1::7,Ready to go?

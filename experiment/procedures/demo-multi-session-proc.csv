@@ -1,0 +1,6 @@
+Trial Type,Text,Settings
+show-text,this is the first trial of session 1,
+show-text,this is the second trial of session 1,
+pause-experiment,"<p>This is the pause between session 1 and 2.</p> <p>Please return in <span id=""time-to-return""></span>.</p>",20
+show-text,this is the first trial of session 2,
+show-text,this is the second trial of session 2,

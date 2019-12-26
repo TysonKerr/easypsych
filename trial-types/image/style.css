@@ -1,0 +1,5 @@
+img {
+    margin: 20px 0;
+    object-fit: contain; /* this prevents img stretching when height and width dont match original image size */
+}
+button { margin-top: 20px; }

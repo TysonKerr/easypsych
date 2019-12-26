@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trial</title>
+    <meta charset="utf-8">
+    <base href="@{base_url}">
+    <link rel="stylesheet" href="code/css/style.css">
+    <script src="code/js/helper.js"></script>
+    <script src="code/js/trial.js"></script>
+    <script>
+        trial.values = "@{trial_values}"; // experiment.js will convert this into the correct object
+    </script>
+</head>
+<body>
+    <div id="trial-mask"></div>
+    <div class="center-outer"><div class="center-inner">
+        <form method="post" action="javascript:trial.submit()" id="trial-form" autocomplete="off">@{trial_contents}</form>
+    </div></div>
+</body>
+</html>

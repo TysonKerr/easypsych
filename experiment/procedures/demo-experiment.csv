@@ -1,0 +1,29 @@
+Stimuli,Trial Type,Max Time,Min Time,Text,Settings,Shuffle,Post 1 Trial Type,Post 1 Max Time,Post 1 Text,Post 1 Min,Post 1 Max
+0,show-text,user,,Get ready to see some word pairs.,,off,,,,,
+2,word-pair-study,2,,,,study1,jol,,How likely are you to remember that word pair?,0,100
+3,word-pair-study,2,,,,study1,jol,,How likely are you to remember that word pair?,0,100
+4,word-pair-study,2,,,,study1,jol,,How likely are you to remember that word pair?,0,100
+5,word-pair-study,2,,,,study1,jol,,How likely are you to remember that word pair?,0,100
+6,word-pair-study,2,,,,study1,jol,,How likely are you to remember that word pair?,0,100
+7,word-pair-study,2,,,,study1,jol,,How likely are you to remember that word pair?,0,100
+0,show-text,user,,Now get ready for the test.,,off,,,,,
+2,word-pair-test,user,,,,test1,,,,,
+3,word-pair-test,user,,,,test1,,,,,
+4,word-pair-test,user,,,,test1,,,,,
+5,word-pair-test,user,,,,test1,,,,,
+6,word-pair-test,user,,,,test1,,,,,
+7,word-pair-test,user,,,,test1,,,,,
+0,show-text,user,,Get ready for list 2.,,off,,,,,
+8,word-pair-study,2,,,,study2,jol,,How likely are you to remember that word pair?,0,100
+9,word-pair-study,2,,,,study2,jol,,How likely are you to remember that word pair?,0,100
+10,word-pair-study,2,,,,study2,jol,,How likely are you to remember that word pair?,0,100
+11,word-pair-study,2,,,,study2,jol,,How likely are you to remember that word pair?,0,100
+12,word-pair-study,2,,,,study2,jol,,How likely are you to remember that word pair?,0,100
+13,word-pair-study,2,,,,study2,jol,,How likely are you to remember that word pair?,0,100
+,show-text,user,,Now get ready for the test.,,off,,,,,
+8,word-pair-test,user,,,,test2,,,,,
+9,word-pair-test,user,,,,test2,,,,,
+10,word-pair-test,user,,,,test2,,,,,
+11,word-pair-test,user,,,,test2,,,,,
+12,word-pair-test,user,,,,test2,,,,,
+13,word-pair-test,user,,,,test2,,,,,

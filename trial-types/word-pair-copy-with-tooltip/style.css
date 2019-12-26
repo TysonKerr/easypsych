@@ -1,0 +1,17 @@
+button {
+    position: relative;
+}
+
+.incorrect-input:disabled:hover::after {
+    content: attr(tooltip);
+    position: absolute;
+    top: -2em;
+    left: calc(50%);
+    transform: translateX(-50%);
+    color: black;
+    border: 1px solid #999;
+    background-color: #F4F4F4;
+    padding: 2px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
