@@ -1,4 +1,5 @@
 Stimuli,Trial Type,Text,Settings,Choices,Descriptions,Min,Max
+,survey-demographics,,,,,,
 2::13,word-list-recall,Please enter some words.,,,,,
 2,word-pair-copy,,,,,,
 2,word-pair-copy-with-tooltip,,,,,,

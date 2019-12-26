@@ -1,0 +1,23 @@
+form {
+    max-width: 725px;
+    margin: auto;
+    text-align: left;
+    display: inline-block;
+}
+
+.question-container {
+    margin-bottom: 40px;
+}
+
+.input-container {
+    display: inline-block;
+}
+
+.input-container label {
+    display: block;
+    text-align: left;
+}
+
+.input-container label:hover {
+    background-color: #8F8;
+}
