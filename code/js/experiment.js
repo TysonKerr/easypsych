@@ -571,8 +571,6 @@ Experiment.prototype.validator = {
                     errors.push(`${error_start}, the type "${trial["Trial Type"]}" does not exist.`);
                 }
                 
-                error_start = `In row ${i + 2}`;
-                
                 if ("Stimuli" in trial) {
                     let stim_indices = helper.parse_range_str(trial["Stimuli"]);
                     
@@ -583,7 +581,7 @@ Experiment.prototype.validator = {
                         
                         if (!(index in stim)) {
                             let msg = post_level === 0 ? 'in the "Stimuli" column' : `for post trial ${post_level}`;
-                            errors.push(`${error_start}, ${msg}, the stimuli row ${stim_indices[j]} does not exist.`);
+                            errors.push(`In row ${i + 2}, ${msg}, the stimuli row ${stim_indices[j]} does not exist.`);
                         }
                     }
                 }
