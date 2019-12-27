@@ -108,10 +108,25 @@ function get_smart_cached_link($link) {
     return "$link?v=" . filemtime($link);
 }
 
-function read_csv($filename) {
-    $handle = fopen($filename, 'r');
+function validate_csv_filename($filename) {
+    $last_4 = strtolower(substr($filename, -4));
+    
+    if ($last_4 !== '.csv' and $last_4 !== '.txt') {
+        trigger_error("Bad csv filename provided: $filename", E_USER_ERROR);
+    }
+}
+
+function fopen_errorful($filename, $mode) {
+    $handle = fopen($filename, $mode);
     
     if (!$handle) trigger_error("Cannot open file: $filename", E_USER_ERROR);
+    
+    return $handle;
+}
+
+function read_csv($filename) {
+    validate_csv_filename($filename);
+    $handle = fopen_errorful($filename, 'r');
     
     $headers = fgetcsv($handle);
     
@@ -143,6 +158,7 @@ function read_csv($filename) {
 }
 
 function write_csv($filename, $data) {
+    validate_csv_filename($filename);
     $headers = [];
     
     foreach ($data as $row) {
@@ -153,9 +169,7 @@ function write_csv($filename, $data) {
     
     $headers = array_keys($headers);
     
-    $handle = fopen($filename, 'w');
-    
-    if (!$handle) trigger_error("Cannot open file: $filename", E_USER_ERROR);
+    $handle = fopen_errorful($filename, 'w');
     
     fputcsv($handle, $headers);
     
@@ -175,9 +189,8 @@ function write_csv($filename, $data) {
 function append_to_csv($filename, $data) {
     if (!is_file($filename)) return write_csv($filename, $data);
     
-    $handle = fopen($filename, 'r+');
-    
-    if (!$handle) trigger_error("Cannot open file: $filename", E_USER_ERROR);
+    validate_csv_filename($filename);
+    $handle = fopen_errorful($filename, 'r+');
     
     $old_headers = fgetcsv($handle);
     $old_headers_flipped = array_flip($old_headers);
