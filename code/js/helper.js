@@ -13,7 +13,7 @@ var helper = {
             .map(range => range.split("::").map(str => str.trim()))
             .map(range_ends => {
                 return range_ends.length === 1
-                    ? range_ends[0]
+                    ? (this.is_numeric(range_ends[0]) ? Number(range_ends[0]) : range_ends[0])
                     : this.range(range_ends[0], range_ends[1]);
             }).reduce((items, set) => items.concat(set), []);
     },

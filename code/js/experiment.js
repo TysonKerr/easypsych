@@ -13,6 +13,8 @@ var Experiment = function(container, resources) {
         loaded_resources.trial_types
     );
     
+    this.validator.validate(this);
+    
     this.add_event_listeners();
 };
 
@@ -512,6 +514,84 @@ Experiment.prototype.error_messages = {
       + "it can optionally start with 'r', but then should only contain a number, "
       + "which may start with a negative sign. Examples of inputs: "
       + "'2', '-1', 'r4', 'r-1'",
+};
+
+Experiment.prototype.validator = {
+    validate: function(experiment) {
+        let proc_errors = this.get_procedure_errors(experiment);
+        
+        if (proc_errors.length > 0) {
+            console.error(
+                `Errors found in the procedure file "${experiment.data.condition.Procedure}":`
+                + "\n\n" +
+                proc_errors.join("\n")
+            );
+        }
+    },
+    
+    get_procedure_errors: function(experiment) {
+        const proc = experiment.data.procedure;
+        const stim = experiment.data.stimuli;
+        const trial_types = experiment.trial_display.trial_types;
+        const errors = [];
+        
+        if (proc.length === 0) return; // nothing to validate
+        
+        if (!(0 in proc[0]) || typeof proc[0][0]["Trial Type"] === "undefined") {
+            errors.push('Missing the required "Trial Type" column');
+        }
+        
+        let next_post_level = 1;
+        
+        proc[0].forEach((trial, post_trial_level) => {
+            if (post_trial_level === 0) return;
+            
+            if (post_trial_level !== next_post_level) {
+                let msg = "Post trials are not sequential. They must start at 1, and have at least 1 column at each level.\nMissing columns:";
+                
+                for (let i = next_post_level; i < post_trial_level; ++i) {
+                    msg += "\n  Post " + i + " (something)";
+                }
+                
+                errors.push(msg);
+            }
+            
+            next_post_level = post_trial_level + 1;
+        });
+        
+        for (let i = 0; i < proc.length; ++i) {
+            proc[i].forEach((trial, post_level) => {
+                if (post_level > 0 && trial["Trial Type"] === "") return;
+                if (!("Trial Type" in trial)) return; // we validated for this earlier, so no need to spam the error messages
+                
+                let orig_column = post_level === 0 ? "Trial Type" : `Post ${post_level} Trial Type`;
+                let error_start = `In row ${i + 2}, under column "${orig_column}"`;
+                
+                if (!(trial["Trial Type"] in trial_types)) {
+                    errors.push(`${error_start}, the type "${trial["Trial Type"]}" does not exist.`);
+                }
+                
+                error_start = `In row ${i + 2}`;
+                
+                if ("Stimuli" in trial) {
+                    let stim_indices = helper.parse_range_str(trial["Stimuli"]);
+                    
+                    for (let j = 0; j < stim_indices.length; ++j) {
+                        if (stim_indices[j] === 0) continue;
+                        
+                        let index = stim_indices[j] - 2;
+                        
+                        if (!(index in stim)) {
+                            let msg = post_level === 0 ? 'in the "Stimuli" column' : `for post trial ${post_level}`;
+                            errors.push(`${error_start}, ${msg}, the stimuli row ${stim_indices[j]} does not exist.`);
+                        }
+                    }
+                }
+            });
+        }
+        
+        return errors;
+    }
 };
 
 var CSV = {
