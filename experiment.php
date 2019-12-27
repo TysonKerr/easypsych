@@ -1,6 +1,5 @@
 <?php
-    define('APP_ROOT', __DIR__);
-    require APP_ROOT . '/code/php/init.php';
+    require __DIR__ . '/code/php/init.php';
     require APP_ROOT . '/code/php/experiment-definitions.php';
     start_session();
     $exp_resources = get_experiment_resources($_SESSION['username'], $_SESSION['id']);

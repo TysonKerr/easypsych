@@ -1,5 +1,7 @@
 <?php
 
+define('APP_ROOT', dirname(dirname(__DIR__)));
+
 function get_setting($setting_name) {
     $settings = get_all_settings();
     return $settings[$setting_name];

@@ -1,7 +1,6 @@
 <?php
 
-define('APP_ROOT', dirname(dirname(__DIR__)));
-require APP_ROOT . '/code/php/init-ajax.php';
+require dirname(dirname(__DIR__)) . '/code/php/init-ajax.php';
 
 if (!filter_has_var(INPUT_POST, 'responses')) exit();
 
