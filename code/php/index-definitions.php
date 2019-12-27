@@ -2,7 +2,7 @@
 
 function get_condition_choice_html() {
     if (get_setting('allow_condition_selection')) {
-        return '<tr> <td>condition:</td> <td>' . get_condition_select_html() . '</td> </tr>';
+        return '<tr> <td>Condition:</td> <td>' . get_condition_select_html() . '</td> </tr>';
     } else {
         return '';
     }
@@ -29,7 +29,9 @@ function get_condition_select_html() {
 
 function process_login_submission() {
     if (filter_has_var(INPUT_POST, 'u')) {
-        $username = filter_input(INPUT_POST, 'u');
+        $username = get_filtered_username(filter_input(INPUT_POST, 'u'));
+        
+        if (strlen($username) < 1) return "Invalid username.";
         
         if (user_data_exists($username)) {
             return login_returning_user($username);
@@ -40,6 +42,13 @@ function process_login_submission() {
     }
     
     return false;
+}
+
+function get_filtered_username($username_raw) {
+    $username = filter_var($username_raw, FILTER_DEFAULT, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+    $username = str_replace(str_split('<>:"/\\|?*' . chr(127)), '', $username);
+    $username = trim($username);
+    return $username;
 }
 
 function login_returning_user($username) {

@@ -71,3 +71,7 @@ textarea, pre {
     pointer-events: none;
     opacity: 1;
 }
+
+.error-message {
+    color: #800;
+}
