@@ -274,8 +274,8 @@ Experiment.prototype.loader = {
         Object.assign(data.csvs, raw_data.procedure);
         Object.assign(data.csvs, raw_data.stimuli);
         
-        data.stimuli  = CSV.build(data.csvs, data.condition['Stimuli'],   'experiment/stimuli/',    data.shuffle_seed + "-stim");
-        let proc_file = CSV.build(data.csvs, data.condition['Procedure'], 'experiment/procedures/', data.shuffle_seed + "-proc");
+        data.stimuli  = CSV.build(data.csvs, 'experiment/stimuli/' + data.condition['Stimuli'],      data.shuffle_seed + "-stim");
+        let proc_file = CSV.build(data.csvs, 'experiment/procedures/' + data.condition['Procedure'], data.shuffle_seed + "-proc");
         
         data.procedure = this.make_procedure(proc_file);
         data.responses = this.read_responses(raw_data.responses);
@@ -500,12 +500,15 @@ Experiment.prototype.error_messages = {
 };
 
 var CSV = {
-    build: function(src_files, filename, dir, shuffle_seed) {
+    build: function(src_files, filename, shuffle_seed) {
         let csv = [];
+        let dir = filename.substring(0, filename.lastIndexOf("/"));
         
-        src_files[dir + filename].forEach(row => {
+        if (dir.length > 0) dir += "/";
+        
+        src_files[filename].forEach(row => {
             if ("Subfile" in row && row["Subfile"] !== "") {
-                let sub_csv = this.build(src_files, row["Subfile"], dir, false);
+                let sub_csv = this.build(src_files, dir + row["Subfile"], false);
                 this.make_csv_inherit_row_values(sub_csv, row);
                 
                 for (let i = 0; i < sub_csv.length; ++i) csv.push(sub_csv[i]);

@@ -217,3 +217,23 @@ if (!function_exists('array_key_last')) {
         return key(array_slice($arr, -1, 1, true));
     }
 }
+
+function get_csv_data($filename) {
+    $data = [$filename => read_csv(APP_ROOT . '/' . $filename)];
+    $dir = substr($filename, 0, strrpos($filename, '/'));
+    
+    if (strlen($dir) > 0) $dir .= '/';
+    
+    foreach ($data[$filename] as $row) {
+        if (!isset($row['Subfile'])) break;
+        if ($row['Subfile'] === '') continue;
+        
+        $nested_file = $dir . $row['Subfile'];
+        
+        if (!isset($data[$nested_file])) {
+            $data = array_merge($data, get_exp_files($nested_file));
+        }
+    }
+    
+    return $data;
+}

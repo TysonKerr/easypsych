@@ -95,20 +95,7 @@ function get_exp_data($username, $id) {
 }
 
 function get_exp_files($filename) {
-    $data = [$filename => read_csv(APP_ROOT . '/' . $filename)];
-    
-    foreach ($data[$filename] as $row) {
-        if (!isset($row['Subfile'])) break;
-        if ($row['Subfile'] === '') continue;
-        
-        $nested_file = dirname($filename) . '/' . $row['Subfile'];
-        
-        if (!isset($data[$nested_file])) {
-            $data = array_merge($data, get_exp_files($nested_file));
-        }
-    }
-    
-    return $data;
+    return get_csv_data($filename);
 }
 
 function get_trial_template() {
