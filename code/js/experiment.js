@@ -133,7 +133,22 @@ Experiment.prototype = {
     
     fetch_csv: function(filename) {
         return fetch("code/php/ajax-fetch-csv.php?f=" + encodeURIComponent(filename))
-            .then(resp => resp.text()).then(text => JSON.parse(text));
+            .then(resp => resp.text()).then(text => {
+                let json_data;
+                
+                try {
+                    json_data = JSON.parse(text);
+                } catch(error) {
+                    console.error(
+                        error
+                        + "\ncannot parse JSON data when fetching csv, received following from server:\n"
+                        + text
+                    );
+                }
+                
+                return json_data;
+            })
+            .then(csv_data => CSV.build(csv_data, filename));
     },
     
     add_event_listeners: function() {
@@ -576,28 +591,28 @@ var CSV = {
     shuffle: function(csv, shuffle_seed) {
         if (!(0 in csv) || !("Shuffle" in csv[0])) return csv; // nothing to shuffle, dont waste time
         
-        shuffle_seed = String(shuffle_seed);
+        let seed = typeof shuffle_seed === "undefined" || String(shuffle_see) === ""
+                 ? String(Math.random())
+                 : String(shuffle_seed);
         
-        if (shuffle_seed.length < 1) shuffle_seed = String(Math.random());
-        
-        let random = new Math.seedrandom(shuffle_seed);
+        let random = new Math.seedrandom(seed);
         
         let shuffles = {};
         
         for (let i = 0; i < csv.length; ++i) {
-            let shuffle_val = csv[i]["Shuffle"].toLowerCase();
+            let shuffle_val = csv[i]["Shuffle"];
             
-            if (shuffle_val === "" || shuffle_val === "off") continue;
+            if (shuffle_val === "" || shuffle_val.toLowerCase() === "off") continue;
             
             if (!(csv[i]["Shuffle"] in shuffles)) {
                 shuffles[csv[i]["Shuffle"]] = [];
             }
             
-            shuffles[csv[i]["Shuffle"]].push(i);
+            shuffles[shuffle_val].push(i);
         }
         
         for (let shuffle_val in shuffles) {
-            for (let i = shuffles[shuffle_val].length - 1; i > 1; --i) {
+            for (let i = shuffles[shuffle_val].length - 1; i > 0; --i) {
                 let j = Math.floor(random() * (i + 1));
                 
                 if (i !== j) {

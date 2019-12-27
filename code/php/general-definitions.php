@@ -108,6 +108,9 @@ function get_smart_cached_link($link) {
 
 function read_csv($filename) {
     $handle = fopen($filename, 'r');
+    
+    if (!$handle) trigger_error("Cannot open file: $filename", E_USER_ERROR);
+    
     $headers = fgetcsv($handle);
     
     foreach ($headers as $i => $header) {
@@ -150,6 +153,8 @@ function write_csv($filename, $data) {
     
     $handle = fopen($filename, 'w');
     
+    if (!$handle) trigger_error("Cannot open file: $filename", E_USER_ERROR);
+    
     fputcsv($handle, $headers);
     
     foreach ($data as $row) {
@@ -169,6 +174,9 @@ function append_to_csv($filename, $data) {
     if (!is_file($filename)) return write_csv($filename, $data);
     
     $handle = fopen($filename, 'r+');
+    
+    if (!$handle) trigger_error("Cannot open file: $filename", E_USER_ERROR);
+    
     $old_headers = fgetcsv($handle);
     $old_headers_flipped = array_flip($old_headers);
     $headers = [];
@@ -231,7 +239,7 @@ function get_csv_data($filename) {
         $nested_file = $dir . $row['Subfile'];
         
         if (!isset($data[$nested_file])) {
-            $data = array_merge($data, get_exp_files($nested_file));
+            $data = array_merge($data, get_csv_data($nested_file));
         }
     }
     

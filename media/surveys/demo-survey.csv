@@ -1,8 +1,9 @@
-Name,Type,Values,Question
-Wellbeing,textbox,,How are you?
-Weather,textbox,,How's the weather? 
-Tired,likert,1::3,how tired are you?
-Fun,likert,1::3,how much fun is this?
-More,textbox,,more text
-Final,textbox,,final question
-Ready,likert,1::7,Ready to go?
+Name,Type,Values,Question,Subfile
+Wellbeing,textbox,,How are you?,
+Weather,textbox,,How's the weather? ,
+Tired,likert,1::3,How tired are you?,
+Fun,likert,1::3,How much fun is this?,
+,,,,demo-survey-2.csv
+More,textbox,,Do you have any comments?,
+Final,textbox,,Do you like surveys?,
+Ready,likert,1::7,Ready to go?,

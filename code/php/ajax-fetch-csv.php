@@ -5,4 +5,4 @@ require APP_ROOT . '/code/php/init-ajax.php';
 
 if (!filter_has_var(INPUT_GET, 'f')) exit();
 
-echo json_encode(read_csv(APP_ROOT . '/' . filter_input(INPUT_GET, 'f')));
+echo json_encode(get_csv_data(filter_input(INPUT_GET, 'f')));
