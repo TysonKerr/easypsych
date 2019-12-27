@@ -64,7 +64,7 @@ function get_responses($username, $id_list) {
     $responses = [];
     
     foreach ($id_list as $id) {
-        $filename = APP_ROOT . "/data/$username/$id-responses.csv";
+        $filename = APP_ROOT . "/data/user-$username-data/$id-responses.csv";
         
         if (is_file($filename)) {
             $responses = array_merge(read_csv($filename), $responses);

@@ -2,7 +2,7 @@
 
 header('Content-Type: text/plain');
 ini_set('html_errors', false);
-require APP_ROOT . '/code/php/init.php';
+require dirname(dirname(__DIR__)) . '/code/php/init.php';
 
 start_session();
 

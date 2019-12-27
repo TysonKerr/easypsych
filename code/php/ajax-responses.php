@@ -8,6 +8,6 @@ $username = $_SESSION['username'];
 $id       = $_SESSION['id'];
 
 append_to_csv(
-    APP_ROOT . "/data/$username/$id-responses.csv",
+    APP_ROOT . "/data/user-$username-data/$id-responses.csv",
     json_decode(filter_input(INPUT_POST, 'responses'), true)
 );

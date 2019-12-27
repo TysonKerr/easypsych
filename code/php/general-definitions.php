@@ -51,7 +51,7 @@ function get_random_string($len = 8) {
 }
 
 function record_metadata($username, $id, $metadata) {
-    $dir = APP_ROOT . "/data/$username";
+    $dir = APP_ROOT . "/data/user-$username-data";
     
     if (!is_dir($dir)) mkdir($dir, 0755, true);
     
@@ -66,7 +66,7 @@ function record_metadata($username, $id, $metadata) {
 }
 
 function get_metadata($username, $id = false) {
-    $filename = APP_ROOT . "/data/$username/metadata.csv";
+    $filename = APP_ROOT . "/data/user-$username-data/metadata.csv";
     
     if (!is_file($filename)) return [];
     
@@ -101,7 +101,7 @@ function get_metadata_for_id($metadata, $id) {
 }
 
 function user_data_exists($username) {
-    return is_file(APP_ROOT . "/data/$username/metadata.csv");
+    return is_file(APP_ROOT . "/data/user-$username-data/metadata.csv");
 }
 
 function get_smart_cached_link($link) {
