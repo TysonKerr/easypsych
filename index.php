@@ -15,8 +15,9 @@
     <link rel="stylesheet" href="<?= $css_link ?>">
 </head>
 <body>
-<div class="center-outer">
-    <form method="post" id="welcome-form" class="center-inner">
+<div class="center-outer"><div class="center-inner">
+    <div class="validation-errors"><?= validate_experiment() ?></div>
+    <form method="post" id="welcome-form">
         <div class="error-message"><?= $login_error ?></div>
         <table>
             <tr> <td>Username:</td> <td><input type="text" pattern=".+" required name="u" autofocus></td> </tr>
@@ -24,6 +25,6 @@
             <tr> <td></td> <td><button type="submit">Submit</button></td> </tr>
         </table>
     </form>
-</div>
+</div></div>
 </body>
 </html>

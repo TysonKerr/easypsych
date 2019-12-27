@@ -32,7 +32,13 @@ function get_experiment_title() {
 }
 
 function get_conditions() {
-    return read_csv(APP_ROOT . '/experiment/conditions.csv');
+    static $conditions = null;
+    
+    if ($conditions === null) {
+        $conditions = read_csv(APP_ROOT . '/experiment/conditions.csv');
+    }
+    
+    return $conditions;
 }
 
 function get_new_id() {
@@ -108,18 +114,26 @@ function get_smart_cached_link($link) {
     return "$link?v=" . filemtime($link);
 }
 
-function validate_csv_filename($filename) {
+function is_valid_csv_filename($filename) {
     $last_4 = strtolower(substr($filename, -4));
     
-    if ($last_4 !== '.csv' and $last_4 !== '.txt') {
-        trigger_error("Bad csv filename provided: $filename", E_USER_ERROR);
+    return ($last_4 === '.csv') ? true : false;
+}
+
+function validate_csv_filename($filename) {
+    if (!is_valid_csv_filename($filename)) {
+        throw new Exception("Filename missing '.csv' extension: $filename");
     }
 }
 
 function fopen_errorful($filename, $mode) {
-    $handle = fopen($filename, $mode);
+    if (!is_file($filename) and $mode[0] === 'r') {
+        throw new Exception("Cannot read file, does not exist: $filename");
+    }
     
-    if (!$handle) trigger_error("Cannot open file: $filename", E_USER_ERROR);
+    $handle = @fopen($filename, $mode);
+    
+    if (!$handle) throw new Exception("Failed to open file, it is likely being used by another program like Excel: $filename");
     
     return $handle;
 }
@@ -247,14 +261,23 @@ function get_csv_data($filename) {
     
     if (strlen($dir) > 0) $dir .= '/';
     
-    foreach ($data[$filename] as $row) {
+    foreach ($data[$filename] as $i => $row) {
         if (!isset($row['Subfile'])) break;
         if ($row['Subfile'] === '') continue;
         
         $nested_file = $dir . $row['Subfile'];
         
         if (!isset($data[$nested_file])) {
-            $data = array_merge($data, get_csv_data($nested_file));
+            try {
+                $nested_data = get_csv_data($nested_file);
+            } catch (Exception $e) {
+                throw new Exception(
+                    "Error when reading subfile '$nested_file' for file '$filename' on row " . ($i + 2) . ":\n  "
+                    . $e->getMessage() . "\n"
+                );
+            }
+            
+            $data = array_merge($data, $nested_data);
         }
     }
     

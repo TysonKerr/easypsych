@@ -75,3 +75,10 @@ textarea, pre {
 .error-message {
     color: #800;
 }
+
+.validation-errors {
+    text-align: left;
+    display: inline-block;
+    white-space: pre;
+    padding: 5px;
+}

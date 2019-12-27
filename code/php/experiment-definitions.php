@@ -25,6 +25,7 @@ function get_trial_type_names() {
         $trial_type_dir = TRIAL_TYPES_DIR . "/$entry";
         
         if (!is_dir($trial_type_dir)) continue;
+        if (!is_file("$trial_type_dir/display.html")) continue;
         
         $names[] = $entry;
     }
@@ -43,8 +44,6 @@ function get_trial_types() {
     
     foreach ($trial_type_names as $name) {
         $dir = TRIAL_TYPES_DIR . "/$name";
-        
-        if (!is_file("$dir/display.html")) continue;
         
         $trial_types[$name] = [
             'display' => file_get_contents("$dir/display.html")
