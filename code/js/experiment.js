@@ -591,7 +591,7 @@ var CSV = {
     shuffle: function(csv, shuffle_seed) {
         if (!(0 in csv) || !("Shuffle" in csv[0])) return csv; // nothing to shuffle, dont waste time
         
-        let seed = typeof shuffle_seed === "undefined" || String(shuffle_see) === ""
+        let seed = typeof shuffle_seed === "undefined" || String(shuffle_seed) === ""
                  ? String(Math.random())
                  : String(shuffle_seed);
         
