@@ -47,7 +47,7 @@ function process_login_submission() {
 function get_filtered_username($username_raw) {
     $username = filter_var($username_raw, FILTER_DEFAULT, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
     $username = str_replace(str_split('<>:"/\\|?*' . chr(127)), '', $username);
-    $username = trim($username);
+    $username = strtolower(trim($username));
     return $username;
 }
 
