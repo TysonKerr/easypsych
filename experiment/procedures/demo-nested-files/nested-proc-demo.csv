@@ -1,0 +1,8 @@
+Stimuli,Trial Type,Text,Subfile
+,show-text,"This is a demonstration of how to use the ""Subfile"" column in csv files.",
+,,,sub-procs/nested-proc-sub-1.csv
+,show-text,Now we are back in the main procedure file.,
+,,append: (appended from main file),sub-procs/nested-proc-sub-1.csv
+,show-text,"And now we will include a different file, which will itself include some files.",
+add: 2,,prepend: (prepended from main file),sub-procs/nested-proc-sub-2.csv
+,show-text,Last trial from the original procedure file!,

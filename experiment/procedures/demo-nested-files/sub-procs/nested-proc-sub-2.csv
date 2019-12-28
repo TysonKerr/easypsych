@@ -1,0 +1,6 @@
+Stimuli,Trial Type,Text,Subfile
+0,show-text,"And this is the first row of the ""nested-proc-sub-2.csv"" file",
+0,show-text,(nested-proc-sub-2) trial 2,
+0,show-text,"<p>Next, the sub file ""nested-proc-sub-1.csv"" will be included from ""nested-proc-sub-2.csv"".</p> <p>Note that since these two files are in the same folder, you don't prepend the directory name to the ""nested-proc-sub-1.csv"" file.</p>",
+1,,,nested-proc-sub-1.csv
+0,show-text,(nested-proc-sub-2) trial 5,

@@ -1,0 +1,4 @@
+Stimuli,Trial Type,Text
+0,show-text,"This is the first row of ""nested-proc-sub-1.csv"""
+0,show-text,(nested-proc-sub-1) trial 2
+0,show-text,(nested-proc-sub-1) trial 3

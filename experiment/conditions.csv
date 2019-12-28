@@ -1,8 +1,8 @@
 Procedure,Stimuli,Name
-demo-experiment.csv,demo-stim.csv,paired associates
-timing-demo-proc.csv,demo-stim.csv,timing
-trial-types-demo-proc.csv,demo-stim.csv,trial types
-nested-proc-demo.csv,demo-stim.csv,nested files
-post-trials-demo.csv,demo-stim.csv,post trials
+demo-word-pair-proc.csv,demo-stim.csv,paired associates
+demo-timing-proc.csv,demo-stim.csv,timing
+demo-trial-types-proc.csv,demo-stim.csv,trial types
+demo-nested-files/nested-proc-demo.csv,demo-stim.csv,nested files
+demo-post-trials-proc.csv,demo-stim.csv,post trials
 demo-multi-session-proc.csv,,multi-session
 demo-survey-proc.csv,,surveys
