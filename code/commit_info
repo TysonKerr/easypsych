@@ -1,4 +1,8 @@
-0 test-branch 1
-2019-12-28 21:05:28 -0800
-aa5cccb951627b15614b1f3bb23ff585496b73d9
-re-enabled changing trials with keypresses
+33 test-branch 2
+
+
+Previous Commit info:
+
+2019-12-28 22:19:11 -0800
+fd53c64900fbe031444abe8e3e8224f96a8d9708
+more changes to how commits are saved
