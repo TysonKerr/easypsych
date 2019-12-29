@@ -1,6 +1,7 @@
 "use strict";
 var Experiment = function(container, resources) {
     let loaded_resources = this.loader.load(resources);
+    this.settings = loaded_resources.settings;
     this.data = loaded_resources.data;
     this.proc_index = loaded_resources.proc_index;
     this.trial_number = loaded_resources.trial_number;
@@ -20,8 +21,6 @@ var Experiment = function(container, resources) {
 
 Experiment.prototype = {
     /* below are examples of the properties an experiment would have
-    proc_index: 0,
-    post_trial_level: 0,
     data: {
         condition: [],
         procedure: [],
@@ -29,6 +28,13 @@ Experiment.prototype = {
         responses: [],
         shuffle_seed: "rand_string"
     },
+    trial: null,
+    trial_number: 0,
+    proc_index: 0,
+    post_trial_level: 0,
+    trial_display: {},
+    validator: {},
+    settings: {}
     */
     
     start_current_trial: function() {
@@ -162,11 +168,11 @@ Experiment.prototype = {
     process_keydown: function(event) {
         if (!(event.ctrlKey && event.altKey && this.trial)) return;
         
-        if (event.key === "ArrowRight") {
+        if (event.key === "ArrowRight" && this.settings.allow_keyboard_shortcuts_to_change_trial) {
             this.trial.submit({"Exp_Command": "submit trial"});
         }
         
-        if (event.key === "ArrowLeft") {
+        if (event.key === "ArrowLeft" && this.settings.allow_keyboard_shortcuts_to_change_trial) {
             this.trial.submit({"Exp_Command": "mod proc index: r-1"});
         }
     },
@@ -262,7 +268,8 @@ Experiment.prototype.loader = {
         const loaded = {
             trial_template: exp_resources.trial_template,
             trial_types: exp_resources.trial_types,
-            data: this.load_exp_data(exp_resources.exp_data)
+            data: this.load_exp_data(exp_resources.exp_data),
+            settings: exp_resources.settings
         };
         
         this.set_loaded_trial_and_proc_index(loaded);

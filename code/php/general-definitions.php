@@ -11,7 +11,7 @@ function get_all_settings() {
     static $settings = null;
     
     if ($settings === null) {
-        $settings = parse_ini_file(APP_ROOT . '/Experiment/settings.ini.php', true, INI_SCANNER_TYPED);
+        $settings = parse_ini_file(APP_ROOT . '/Experiment/settings-server.ini.php', true, INI_SCANNER_TYPED);
     }
     
     return $settings;

@@ -105,6 +105,11 @@ function get_experiment_resources($username, $id) {
     return json_encode([
         'trial_template' => get_trial_template(),
         'exp_data' => get_exp_data($username, $id),
-        'trial_types' => get_trial_types()
+        'trial_types' => get_trial_types(),
+        'settings' => get_client_settings()
     ]);
+}
+
+function get_client_settings() {
+    return parse_ini_file(APP_ROOT . '/Experiment/settings-client.ini.php', true, INI_SCANNER_TYPED);
 }
