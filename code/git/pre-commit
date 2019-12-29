@@ -1,0 +1,8 @@
+#!/bin/sh
+
+masterCommits=$(git log master --pretty=oneline | wc -l)
+branchName=$(git symbolic-ref --short HEAD)
+commitsSinceMaster=$(git log master..$branchName --pretty=oneline | wc -l)
+lastCommitInfo=$(git log -1 --pretty=format:"%nPrevious Commit info:%n%ci%n%H%n%B")
+echo -e "$masterCommits $branchName $commitsSinceMaster\n$lastCommitInfo" > code/commit_info
+git add code/commit_info
