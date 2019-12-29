@@ -1,8 +1,8 @@
 Stimuli,Trial Type,Max Time,Min Time,Text,Settings,Shuffle
-0,show-text,user,1,proc2 1,,on
-0,show-text,user,2,proc2 2,,on
-0,show-text,user,3,proc2 3,,on
-0,show-text,user,4,proc2 4,,on
-0,show-text,user,5,proc2 5,,on
-0,show-text,user,6,proc2 6,,on
-0,show-text,user,7,proc2 7,,on
+0,show-text,,,"<p>This trial has the following values:</p> <div>Max Time: """"</div> <div>Min Time: """"</div>",,off
+0,show-text,user,,"<p>This trial has the following values:</p> <div>Max Time: ""user""</div> <div>Min Time: """"</div>",,off
+0,show-text,user,0,"<p>This trial has the following values:</p> <div>Max Time: ""user""</div> <div>Min Time: ""0""</div>",,off
+0,show-text,user,3,"<p>This trial has the following values:</p> <div>Max Time: ""user""</div> <div>Min Time: ""3""</div>",,off
+0,show-text,5,3,"<p>This trial has the following values:</p> <div>Max Time: ""5""</div> <div>Min Time: ""3""</div>",,off
+0,show-text,5,5,"<p>This trial has the following values:</p> <div>Max Time: ""5""</div> <div>Min Time: ""5""</div>",,off
+0,show-text,5,,"<p>This trial has the following values:</p> <div>Max Time: ""5""</div> <div>Min Time: """"</div>",,off
