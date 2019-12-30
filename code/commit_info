@@ -1,6 +1,6 @@
-37 git-specific-additions 2
+40 dev 0
 
 Previous Commit info:
-2019-12-29 16:35:41 -0800
-7ef5550078c52fbf3a830aca9e8daecdfc0dec84
-added gitattributes
+2019-12-29 16:40:37 -0800
+31fa1808cf24e0eed3a3f9cbd3c5e0fbdf4b7546
+removed code/git from export

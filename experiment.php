@@ -12,7 +12,7 @@
     <title><?= get_experiment_title() ?> Experiment</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="<?= $css_link ?>">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+    <script src="code/vendor/seedrandom.3.0.5.min.js"></script>
     <script src="<?= $helper_js_link ?>"></script>
     <script src="<?= $exp_js_link ?>"></script>
     <script>
