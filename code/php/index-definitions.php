@@ -28,20 +28,18 @@ function get_condition_select_html() {
 }
 
 function process_login_submission() {
-    if (filter_has_var(INPUT_POST, 'u')) {
-        $username = get_filtered_username(filter_input(INPUT_POST, 'u'));
-        
-        if (strlen($username) < 1) return "Invalid username.";
-        
-        if (user_data_exists($username)) {
-            return login_returning_user($username);
-        } else {
-            $condition_index = filter_has_var(INPUT_POST, 'c') ? filter_input(INPUT_POST, 'c') : '-1';
-            return login_new_user($username, $condition_index);
-        }
-    }
+    if (!filter_has_var(INPUT_POST, 'u')) return false;
     
-    return false;
+    $username = get_filtered_username(filter_input(INPUT_POST, 'u'));
+    
+    if (strlen($username) < 1) return "Invalid username.";
+    
+    if (user_data_exists($username)) {
+        return login_returning_user($username);
+    } else {
+        $condition_index = filter_has_var(INPUT_POST, 'c') ? filter_input(INPUT_POST, 'c') : '-1';
+        return login_new_user($username, $condition_index);
+    }
 }
 
 function get_filtered_username($username_raw) {
