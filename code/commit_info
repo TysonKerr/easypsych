@@ -1,6 +1,6 @@
-40 dev 0
+41 let-trials-wait-for-data-submission 0
 
 Previous Commit info:
-2019-12-29 16:40:37 -0800
-31fa1808cf24e0eed3a3f9cbd3c5e0fbdf4b7546
-removed code/git from export
+2019-12-29 16:48:32 -0800
+fc90ee9c750bd6d3f1c4910a37f7af970f542283
+moved seedrandom to local vendor folder

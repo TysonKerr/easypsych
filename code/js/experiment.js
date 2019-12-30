@@ -132,7 +132,8 @@ Experiment.prototype = {
     set_proc_index_to_next_available_trial: function() {
         ++this.post_trial_level;
         
-        if (!(this.post_trial_level in this.data.procedure[this.proc_index])
+        if (!(this.proc_index in this.data.procedure)
+            || !(this.post_trial_level in this.data.procedure[this.proc_index])
             || this.data.procedure[this.proc_index][this.post_trial_level]["Trial Type"] === ""
         ) {
             this.change_trial(this.proc_index + 1);
