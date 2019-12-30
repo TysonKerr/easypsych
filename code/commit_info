@@ -1,6 +1,6 @@
-41 let-trials-wait-for-data-submission 2
+41 let-trials-wait-for-data-submission 4
 
 Previous Commit info:
-2019-12-30 04:13:04 -0800
-61ecb661d2cd86bbde7dce574ca7b13dd70daa95
-made end-of-experiment show spinning gif
+2019-12-30 04:25:31 -0800
+b8b4e2e040280f8b0cb853d175af306d1bb139d1
+made pause-experiment wait for data submission
