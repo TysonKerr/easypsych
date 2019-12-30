@@ -1,8 +1,6 @@
-37 git-specific-additions 1
+37 git-specific-additions 2
 
 Previous Commit info:
-2019-12-29 15:47:47 -0800
-989d64a77151d204024fcf7cf6590d569c4ba76b
-added pre-commit hook to repo
-
-also added a setup batch file to create symlink
+2019-12-29 16:35:41 -0800
+7ef5550078c52fbf3a830aca9e8daecdfc0dec84
+added gitattributes
