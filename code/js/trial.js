@@ -30,6 +30,10 @@ var trial = {
         this.experiment.trial = this;
         
         window.parent.window.trial = this; // for ease of testing
+        
+        document.body.removeChild(document.getElementById("trial-mask"));
+        
+        if (typeof this.onload === "function") this.onload();
     },
     
     add_event_listeners: function() {
@@ -67,6 +71,10 @@ var trial = {
     
     get_last_response_value: function(column_name, first_val_only = true) {
         return this.experiment.get_last_response_value(column_name, first_val_only);
+    },
+    
+    wait_for_data_submission_to_complete: function() {
+        return this.experiment.wait_for_data_submission_to_complete();
     },
 };
 
@@ -252,8 +260,5 @@ trial.disables = {
 };
 
 window.addEventListener("load", function() {
-    if (typeof trial.values === "object") trial.init();
-    document.body.removeChild(document.getElementById("trial-mask"));
-    
-    if (typeof trial.onload === "function") trial.onload();
+    trial.init();
 });

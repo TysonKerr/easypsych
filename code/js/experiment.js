@@ -191,6 +191,12 @@ Experiment.prototype = {
             return "";
         }
     },
+    
+    wait_for_data_submission_to_complete: function() {
+        return new Promise(resolve => {
+            this.data_submission.weatch_for_empty_queue(() => resolve());
+        });
+    },
 };
 
 Experiment.prototype.Trial_Display = function(container, trial_template, trial_types) {
@@ -390,6 +396,7 @@ Experiment.prototype.data_submission = {
     response_submission_queue: [],
     is_ready_to_submit_responses: true,
     error_counter: 0,
+    observers_for_empty_queue: [],
     
     receive: function(json_responses, exp_responses, {trial_number, proc_index, post_trial_level}) {
         let response_set = this.get_response_set(exp_responses, trial_number);
@@ -508,7 +515,23 @@ Experiment.prototype.data_submission = {
         
         if (this.response_submission_queue.length > 0) {
             this.submit_responses();
+        } else {
+            this.notify_observers_for_empty_queue();
         }
+    },
+    
+    weatch_for_empty_queue: function(callback) {
+        if (this.response_submission_queue.length === 0) {
+            callback();
+        } else {
+            this.observers_for_empty_queue.push(callback);
+        }
+    },
+    
+    notify_observers_for_empty_queue: function() {
+        const observers = this.observers_for_empty_queue;
+        observers.forEach(callback => callback());
+        observers.splice(0, observers.length);
     },
 };
 

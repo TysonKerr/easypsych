@@ -1,0 +1,8 @@
+#data-submission-complete {
+    display: none;
+}
+
+.data-success {
+    font-weight: bold;
+    color: green;
+}
