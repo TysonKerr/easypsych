@@ -1,6 +1,6 @@
-45 shuffles 1
+45 shuffles 2
 
 Previous Commit info:
-2019-12-30 08:27:26 -0800
-bf2aadd35388aebefd484125681dc934acb024d9
-unnested code in process_login_submission
+2019-12-30 20:49:16 -0800
+7fe3a73e07f6c99323a2bf9e833838cc7fa07c8a
+moved CSV js code into its own file
