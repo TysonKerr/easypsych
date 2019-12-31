@@ -1,0 +1,47 @@
+.shuffle-demo { text-align: center; }
+.csv-pair-container > div {
+    width: 50%;
+    display: inline-block;
+    padding: 5px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.csv-pair-container > div:first-child table { margin-left: auto; }
+
+table {
+    text-align: left;
+    border-collapse: collapse;
+    font-family: monospace;
+    overflow: auto;
+    user-select: none;
+}
+td, th {
+    border: 1px solid black;
+}
+td { padding: 0; }
+th { padding: 1px 4px; }
+
+td > span {
+    display: block;
+    padding: 1px 4px;
+    white-space: nowrap;
+    max-width: 150px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+td > span:empty:after {
+    content: "\a0";
+}
+
+#cell-color-input {
+    display: none;
+    position: fixed;
+    top: 25px;
+    left: 25px;
+}
+
+#cell-color-input.shown {
+    display: initial;
+}
