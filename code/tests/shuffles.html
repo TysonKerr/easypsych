@@ -32,7 +32,8 @@
         td { padding: 0; }
         th { padding: 1px 4px; }
         
-        td > div {
+        td > span {
+            display: block;
             padding: 1px 4px;
             white-space: nowrap;
             max-width: 150px;
@@ -40,19 +41,35 @@
             overflow: hidden;
         }
         
-        td > div:after {
+        td > span:empty:after {
             content: "\a0";
         }
+        
+        #cell-color-input {
+            display: none;
+            position: fixed;
+            top: 25px;
+            left: 25px;
+        }
+        
+        #cell-color-input.shown {
+            display: initial;
+        }
     </style>
+    <style id="cell-styles"></style>
 </head>
 <body>
 
 <div id="shuffle-demo-container"></div>
 
+<input type="color" id="cell-color-input">
+
 <script>
 "use strict";
 
 const csvs = [];
+const selected_cell_classes = [];
+const cell_class_lookup = {};
 
 function make_csv(headers, ...rows) {
     const csv = [];
@@ -112,9 +129,9 @@ function Cell(value, x, y, class_prefix) {
 Cell.prototype = {
     toString: function() { return this.value; },
     get_wrapped_value: function() {
-        return `<div class='c-${this.class_prefix}-${this.x}-${this.y}'>`
+        return `<span class='shuffle-cell c-${this.class_prefix}-${this.x}-${this.y}'>`
                 + this.value.replace(/&/g, "&amp;").replace(/</g, "&lt;")
-                + "</div>";
+                + "</span>";
     },
     clone: function() {
         return new Cell(this.value, this.x, this.y, this.class_prefix);
@@ -162,10 +179,62 @@ function reshuffle_demo(demo_element) {
     shuffled_container.innerHTML = get_csv_html(csv_shuffled);
 }
 
+function get_rgb_of_background_color(element) {
+    // credit Danilo Valente @ https://stackoverflow.com/questions/11670019/does-object-style-color-only-return-rgb
+    var rgb = getComputedStyle(element).backgroundColor.match(/\d+/g);
+    
+    if (rgb.length > 3) {
+        if (rgb[3] === "0") {
+            return "#ffffff";
+        } else {
+            rgb.splice(3, rgb.length - 3);
+        }
+    }
+    
+    return "#" + rgb.map(val => parseInt(val).toString(16).padStart(2, "0")).join("");
+}
+
+function show_color_input(clicked_element) {
+    selected_cell_classes.splice(0, selected_cell_classes.length);
+    selected_cell_classes.push(clicked_element.classList[1]);
+    const color_input = document.getElementById("cell-color-input");
+    const current_color = get_rgb_of_background_color(clicked_element);
+    color_input.value = current_color === "#ffffff" ? "#00ff00" : current_color;
+    color_input.classList.add("shown");
+}
+
+function hide_color_input() {
+    selected_cell_classes.splice(0, selected_cell_classes.length);
+    document.getElementById("cell-color-input").classList.remove("shown");
+}
+
 document.getElementById("shuffle-demo-container").addEventListener("click", function(event) {
     if (event.target.tagName === "BUTTON") {
         reshuffle_demo(event.target.closest(".shuffle-demo"));
     }
+});
+
+document.addEventListener("click", function(event) {
+    if (event.target.classList.contains("shuffle-cell")) {
+        show_color_input(event.target);
+    } else if (event.target !== document.getElementById("cell-color-input")) {
+        hide_color_input();
+    }
+});
+
+document.getElementById("cell-color-input").addEventListener("input", function() {
+    const sheet = document.getElementById("cell-styles").sheet;
+    const rules = sheet.cssRules || sheet.rules;
+    const color = this.value;
+    
+    selected_cell_classes.forEach(cell_class => {
+        if (!(cell_class in cell_class_lookup)) {
+            cell_class_lookup[cell_class] = rules.length;
+            sheet.insertRule(`.${cell_class} { background-color: ${color}; }`, rules.length);
+        } else {
+            rules[cell_class_lookup[cell_class]].style.backgroundColor = color;
+        }
+    });
 });
 
 let csv = make_csv(

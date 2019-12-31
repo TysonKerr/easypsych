@@ -1,6 +1,6 @@
-45 shuffles 3
+45 shuffles 4
 
 Previous Commit info:
-2019-12-31 01:56:04 -0800
-ed689f9cbc383f4607b577f645381f75c32f133a
-added file for testing and demoing shuffles
+2019-12-31 04:24:37 -0800
+57539f8b6cbe22c56a0201d3de59d38212253e2e
+added classes to each cell in shuffle demo
