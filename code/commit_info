@@ -1,6 +1,6 @@
-45 dev 0
+45 shuffles 1
 
 Previous Commit info:
-2019-12-30 04:25:51 -0800
-3778712d40b3a26123c281ec0320a8f4c516551e
-made pause-experiment wait for data submission
+2019-12-30 08:27:26 -0800
+bf2aadd35388aebefd484125681dc934acb024d9
+unnested code in process_login_submission

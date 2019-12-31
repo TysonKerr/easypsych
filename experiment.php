@@ -6,6 +6,7 @@
     $css_link = get_smart_cached_link('code/css/style.css');
     $exp_js_link = get_smart_cached_link('code/js/experiment.js');
     $helper_js_link = get_smart_cached_link('code/js/helper.js');
+    $csv_js_link = get_smart_cached_link('code/js/CSV.js');
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -14,6 +15,7 @@
     <link rel="stylesheet" href="<?= $css_link ?>">
     <script src="code/vendor/seedrandom.3.0.5.min.js"></script>
     <script src="<?= $helper_js_link ?>"></script>
+    <script src="<?= $csv_js_link ?>"></script>
     <script src="<?= $exp_js_link ?>"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
