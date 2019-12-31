@@ -14,6 +14,7 @@
             display: inline-block;
             padding: 5px;
             box-sizing: border-box;
+            overflow: hidden;
         }
         
         .csv-pair-container > div:first-child table { margin-left: auto; }
@@ -22,10 +23,25 @@
             text-align: left;
             border-collapse: collapse;
             font-family: monospace;
+            overflow: auto;
+            user-select: none;
         }
         td, th {
-            padding: 1px 4px;
             border: 1px solid black;
+        }
+        td { padding: 0; }
+        th { padding: 1px 4px; }
+        
+        td > div {
+            padding: 1px 4px;
+            white-space: nowrap;
+            max-width: 150px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        
+        td > div:after {
+            content: "\a0";
         }
     </style>
 </head>
@@ -55,13 +71,13 @@ function make_csv(headers, ...rows) {
 }
 
 function clone_csv(csv) {
-    let clone = [];
+    const clone = [];
     
     for (let i = 0; i < csv.length; ++i) {
         let row = {};
         
         for (let col in csv[i]) {
-            row[col] = csv[i][col];
+            row[col] = csv[i][col].clone ? csv[i][col].clone() : csv[i][col];
         }
         
         clone.push(row);
@@ -71,39 +87,76 @@ function clone_csv(csv) {
 }
 
 function get_csv_html(csv) {
-    let html = "<table> <thead> <tr> <th>"
+    const cols = Object.keys(csv[0]).length,
+          rows = csv.length;
+    
+    let html = `<table style='--cols: ${cols}; --rows: ${rows};'> <thead> <tr> <th>`
         + Object.keys(csv[0]).join("</th> <th>")
         + "</th> </tr> </thead> <tbody>";
     
     for (let i = 0; i < csv.length; ++i) {
-        html += "<tr> <td>" + Object.values(csv[i]).join("</td> <td>") + "</td> </tr>";
+        html += "<tr> <td>" + Object.values(csv[i]).map(cell => cell.get_wrapped_value()).join("</td> <td>") + "</td> </tr>";
     }
     
     html += "</tbody> </table>";
     return html;
 }
 
+function Cell(value, x, y, class_prefix) {
+    this.value = value;
+    this.x = x;
+    this.y = y;
+    this.class_prefix = class_prefix;
+}
+
+Cell.prototype = {
+    toString: function() { return this.value; },
+    get_wrapped_value: function() {
+        return `<div class='c-${this.class_prefix}-${this.x}-${this.y}'>`
+                + this.value.replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                + "</div>";
+    },
+    clone: function() {
+        return new Cell(this.value, this.x, this.y, this.class_prefix);
+    }
+};
+
+function get_csv_clone_with_contents_wrapped(csv, csv_id) {
+    const clone = clone_csv(csv);
+    const headers = Object.keys(clone[0]);
+    
+    for (let y = 0; y < clone.length; ++y) {
+        for (let x = 0; x < headers.length; ++x) {
+            clone[y][headers[x]] = new Cell(clone[y][headers[x]], x, y, csv_id);
+        }
+    }
+    
+    return clone;
+}
+
 function display_csv_shuffle(csv) {
-    csvs.push(csv);
-    const csv_shuffled = clone_csv(csv);
-    CSV.shuffle(csv_shuffled);
+    const csv_index = csvs.length;
+    const unshuffled_csv = get_csv_clone_with_contents_wrapped(csv, csv_index);
+    csvs.push(unshuffled_csv);
+    const shuffled_csv = clone_csv(unshuffled_csv);
+    CSV.shuffle(shuffled_csv);
     const container = document.getElementById("shuffle-demo-container");
-    const csv_index = csvs.length - 1;
     
     container.insertAdjacentHTML("beforeend", 
         "<div class='shuffle-demo' data-csv='" + csv_index + "'>"
             + "<div class='csv-pair-container'><div>"
-            + get_csv_html(csv)
+            + get_csv_html(unshuffled_csv)
             + "</div><div>"
-            + get_csv_html(csv_shuffled)
+            + get_csv_html(shuffled_csv)
             + "</div></div>"
-            +"<div><button class='reshuffle-button'>Reshuffle</button></div>"
+            + "<div><button class='reshuffle-button'>Reshuffle</button></div>"
         + "</div>"
     );
 }
 
 function reshuffle_demo(demo_element) {
-    const csv_shuffled = clone_csv(csv);
+    const csv_index = demo_element.dataset.csv;
+    const csv_shuffled = clone_csv(csvs[csv_index]);
     CSV.shuffle(csv_shuffled);
     const shuffled_container = demo_element.querySelector(".csv-pair-container > div:last-child");
     shuffled_container.innerHTML = get_csv_html(csv_shuffled);
@@ -116,13 +169,19 @@ document.getElementById("shuffle-demo-container").addEventListener("click", func
 });
 
 let csv = make_csv(
-    ["Cue", "Answer", "Shuffle"],
-    ["A", "Apple", "yes"],
-    ["B-", "Banana", "yes"],
-    ["C--", "Cucumber", "yes"],
-    ["D---", "Donut", "yes"],
-    ["E----", "Enchilada", "yes"],
-    ["F-----", "Flapjack", "yes"],
+    ["Cue",      "Answer",    "Shuffle"],
+    ["2",        "---",       ""],
+    ["3",        "---",       "off"],
+    ["1.1-",     "Apple",     "group a"],
+    ["1.2--",    "Banana",    "group a"],
+    ["1.3---",   "Cucumber",  "group a"],
+    ["1.4----",  "Donut",     "group a"],
+    ["1.5-----", "Enchilada", "group a"],
+    ["2.1-",     "Flapjack",  "group b"],
+    ["2.2--",    "Gelatin",   "group b"],
+    ["2.3---",   "Hummus",    "group b"],
+    ["2.4----",  "Ice cream", "group b"],
+    ["2.5-----", "Juice",     "group b"],
 );
 
 display_csv_shuffle(csv);

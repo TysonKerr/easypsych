@@ -84,9 +84,10 @@ var CSV = {
         let shuffles = {};
         
         for (let i = 0; i < csv.length; ++i) {
-            let shuffle_val = csv[i]["Shuffle"];
+            let shuffle_val = String(csv[i]["Shuffle"]);
+            let val_lower = shuffle_val.toLowerCase();
             
-            if (shuffle_val === "" || shuffle_val.toLowerCase() === "off") continue;
+            if (val_lower === "" || val_lower === "off" || val_lower === "no") continue;
             
             if (!(csv[i]["Shuffle"] in shuffles)) {
                 shuffles[csv[i]["Shuffle"]] = [];

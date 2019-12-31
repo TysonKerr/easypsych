@@ -1,6 +1,6 @@
-45 shuffles 2
+45 shuffles 3
 
 Previous Commit info:
-2019-12-30 20:49:16 -0800
-7fe3a73e07f6c99323a2bf9e833838cc7fa07c8a
-moved CSV js code into its own file
+2019-12-31 01:56:04 -0800
+ed689f9cbc383f4607b577f645381f75c32f133a
+added file for testing and demoing shuffles
