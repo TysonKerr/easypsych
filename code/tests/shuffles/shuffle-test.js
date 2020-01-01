@@ -143,7 +143,6 @@ const cell_colors = {
         this.rules = this.sheet.cssRules || this.sheet.rules;
         
         this.input.addEventListener("input", e => this.set_color(e.target.value));
-        this.input.addEventListener("change", e => console.log("changing"));
 
         document.addEventListener("mousedown", event => {
             if (event.target.classList.contains("shuffle-cell")) {
@@ -252,6 +251,7 @@ const cell_colors = {
         
         if (rule.style.backgroundColor === this.selecting_bgc) {
             rule.style.backgroundColor = "";
+            rule.style.color = "";
         }
     },
 
