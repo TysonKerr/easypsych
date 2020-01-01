@@ -133,6 +133,8 @@ const cell_colors = {
     selected_cell_classes: [],
     cell_class_lookup: {},
     input: null,
+    selecting: 0, // 1 for selecting, -1 for deselecting
+    selecting_bgc: "rgb(126, 254, 254)",
     
     init: function() {
         this.input = document.getElementById("cell-color-input");
@@ -141,41 +143,115 @@ const cell_colors = {
         
         this.input.addEventListener("input", e => this.set_color(e.target.value));
 
-        document.addEventListener("click", event => {
+        document.addEventListener("mousedown", event => {
             if (event.target.classList.contains("shuffle-cell")) {
-                this.show_input(event.target);
-            } else if (event.target !== document.getElementById("cell-color-input")) {
-                this.hide_input();
+                this.process_cell_mousedown(event.target, event.ctrlKey);
+            } else if (event.ctrlKey) {
+                this.selecting = 1;
+            } else if (event.target !== this.input
+                && event.target.tagName !== "BUTTON"
+            ) {
+                this.selecting = 0;
+                this.end_input();
             }
         });
+        
+        document.addEventListener("mouseup", e => {
+            this.selecting = 0;
+        });
+        
+        document.addEventListener("mouseover", e => {
+            if (this.selecting === 0) return;
+            
+            if (e.target.classList.contains("shuffle-cell")) {
+                this.select_cell(e.target);
+            }
+        });
+    },
+    
+    process_cell_mousedown: function(cell, ctrl_key) {
+        if (ctrl_key) {
+            if (this.is_selected(cell.classList[1])) {
+                this.selecting = -1;
+            } else {
+                this.selecting = 1;
+            }
+            
+            this.select_cell(cell);
+        } else {
+            this.selecting = 1;
+            this.start_input(event.target);
+        }
+    },
+    
+    is_selected: function(cell_class) {
+        return this.selected_cell_classes.indexOf(cell_class) > -1;
     },
     
     set_color: function(color) {
         this.selected_cell_classes.forEach(cell_class => {
-            if (!(cell_class in this.cell_class_lookup)) {
-                this.cell_class_lookup[cell_class] = this.rules.length;
-                this.sheet.insertRule(`.${cell_class} { background-color: ${color}; }`, this.rules.length);
-            } else {
-                const rule_index = this.cell_class_lookup[cell_class];
-                this.rules[rule_index].style.backgroundColor = color;
-            }
+            this.get_rule(cell_class).style.backgroundColor = color;
         });
     },
     
-    show_input: function(selected_cell) {
+    get_rule: function(cell_class) {
+        if (!(cell_class in this.cell_class_lookup)) {
+            this.cell_class_lookup[cell_class] = this.rules.length;
+            this.sheet.insertRule(`.${cell_class} {}`, this.rules.length);
+        }
+        
+        return this.rules[this.cell_class_lookup[cell_class]];
+    },
+    
+    start_input: function(selected_cell) {
         this.clear_selected_cell_classes();
-        this.selected_cell_classes.push(selected_cell.classList[1]);
+        this.select_cell(selected_cell);
         const current_color = this.get_rgb_of_background_color(selected_cell);
         this.input.value = current_color === "#ffffff" ? "#00ff00" : current_color;
         this.input.classList.add("shown");
     },
+    
+    select_cell: function(cell) {
+        const deselecting = this.selecting === -1;
+        const cell_class = cell.classList[1];
+        
+        if (deselecting) {
+            this.selected_cell_classes.splice(this.selected_cell_classes.indexOf(cell_class), 1);
+            this.remove_cell_selecting_style(cell_class);
+        } else {
+            this.selected_cell_classes.push(cell_class);
+            this.add_cell_selecting_style(cell_class);
+        }
+    },
+    
+    add_cell_selecting_style: function(cell_class) {
+        const rule = this.get_rule(cell_class);
+        rule.style.outline = "2px solid blue";
+        
+        if (rule.style.backgroundColor === "" || rule.style.backgroundColor === "rgb(255, 255, 255)") {
+            rule.style.backgroundColor = this.selecting_bgc;
+        }
+    },
+    
+    remove_cell_selecting_style: function(cell_class) {
+        const rule = this.get_rule(cell_class);
+        rule.style.outline = "";
+        
+        if (rule.style.backgroundColor === this.selecting_bgc) {
+            rule.style.backgroundColor = "";
+        }
+    },
 
-    hide_input: function () {
+    end_input: function () {
         this.clear_selected_cell_classes();
         document.getElementById("cell-color-input").classList.remove("shown");
     },
     
     clear_selected_cell_classes: function() {
+        this.selected_cell_classes.forEach(cell_class => {
+            this.remove_cell_selecting_style(cell_class);
+        });
+        
         this.selected_cell_classes.splice(0, this.selected_cell_classes.length);
     },
     

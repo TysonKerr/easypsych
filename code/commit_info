@@ -1,6 +1,8 @@
-45 shuffles 5
+45 shuffles 6
 
 Previous Commit info:
-2019-12-31 05:38:59 -0800
-83fc32aa74bec1642130819a77f1de4667a5e3fd
-added colors to shuffle tests
+2019-12-31 15:02:37 -0800
+6a5f0ee1e15eea4059a91df171000ce40e3a9885
+move shuffles test to own folder
+
+also split file into 3 files
