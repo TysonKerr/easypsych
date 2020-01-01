@@ -1,6 +1,6 @@
-45 shuffles 9
+45 shuffles 10
 
 Previous Commit info:
-2020-01-01 06:06:29 -0800
-fb5e2a8eead4452e905fd9176765f87f236b7bc7
-removed text coloring bug in shuffle tests
+2020-01-01 06:07:17 -0800
+8bc5ba5a51d7a6abbe423c121c0b31772a474659
+refactored CSV shuffle

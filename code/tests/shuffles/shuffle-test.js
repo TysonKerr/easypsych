@@ -203,7 +203,8 @@ const cell_colors = {
     
     get_contrast_color: function(r, g, b) {
         // from Mark Ransom @ https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
-        return (r*0.299 + g*0.587 + b*0.114) > 186 ? "black" : "white";
+        // slight adjustments made, raised green bias, lowered overall threshold
+        return (r*0.299 + g*0.6 + b*0.114) > 149 ? "black" : "white";
     },
     
     get_rule: function(cell_class) {
