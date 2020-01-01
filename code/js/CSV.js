@@ -1,3 +1,4 @@
+"use strict";
 var CSV = {
     build: function(src_files, filename, shuffle_seed) {
         let csv = [];
@@ -73,19 +74,41 @@ var CSV = {
     copy_row: function(row) { return Object.assign({}, row); },
     
     shuffle: function(csv, shuffle_seed) {
-        if (!(0 in csv) || !("Shuffle" in csv[0])) return csv; // nothing to shuffle, dont waste time
+        if (!(0 in csv)) return csv; // nothing to shuffle, dont waste time
         
-        let seed = typeof shuffle_seed === "undefined" || String(shuffle_seed) === ""
-                 ? String(Math.random())
-                 : String(shuffle_seed);
+        const random = this.get_seeded_random(shuffle_seed);
         
-        let random = new Math.seedrandom(seed);
+        for (let col in csv[0]) {
+            this.shuffle_by_column(csv, col, random);
+        }
         
-        let shuffles = {};
+        return csv;
+    },
+    
+    shuffle_by_column: function(csv, header, random) {
+        const settings = this.get_shuffle_settings(header);
+        
+        if (!settings) return; // in this case, col is not a shuffle column
+        
+        const partitions = this.get_csv_partitions(csv, settings.within);
+        const target_columns = this.get_target_columns(Object.keys(csv[0]), settings.targets);
+        const shuffle = settings.type === "block" ? this.shuffle_block : this.shuffle_rows;
+        
+        Object.values(partitions).forEach(partition => 
+            shuffle.call(this, partition, target_columns, random)
+        );
+    },
+    
+    shuffle_block: function(csv) {
+        
+    },
+    
+    shuffle_rows: function(csv, target_columns, random) {
+        const shuffles = {};
         
         for (let i = 0; i < csv.length; ++i) {
-            let shuffle_val = String(csv[i]["Shuffle"]);
-            let val_lower = shuffle_val.toLowerCase();
+            const shuffle_val = String(csv[i]["Shuffle"]);
+            const val_lower = shuffle_val.toLowerCase();
             
             if (val_lower === "" || val_lower === "off" || val_lower === "no") continue;
             
@@ -103,13 +126,173 @@ var CSV = {
                 if (i !== j) {
                     let row_i = shuffles[shuffle_val][i];
                     let row_j = shuffles[shuffle_val][j];
-                    let temp = csv[row_i];
-                    csv[row_i] = csv[row_j];
-                    csv[row_j] = temp;
+                    
+                    for (let k = 0; k < target_columns.length; ++k) {
+                        let col = target_columns[k];
+                        let temp = csv[row_i][col];
+                        csv[row_i][col] = csv[row_j][col];
+                        csv[row_j][col] = temp;
+                    }
                 }
             }
         }
-        
-        return csv;
     },
+    
+    get_target_columns: function(columns, targets) {
+        if (targets === null) return columns.slice();
+        
+        const target_columns = [];
+        
+        targets.split(",").forEach(range => {
+            if (range.includes("::")) {
+                target_columns.push(...this.get_column_range(columns, range));
+            } else {
+                target_columns.push(this.get_column_by_selector(columns, range));
+            }
+        });
+        
+        return target_columns.filter((col, i, arr) => arr.indexOf(col) === i);
+    },
+    
+    get_column_range(columns, range_str) {
+        const selected_columns = [];
+        let end_points = range_str.split("::");
+        let start = this.get_column_by_selector(columns, end_points[0]);
+        let end   = this.get_column_by_selector(columns, end_points[1]);
+        
+        let start_index = columns.indexOf(start);
+        let end_index   = columns.indexOf(end);
+        
+        if (start_index > end_index) {
+            let temp = start_index;
+            start_index = end_index;
+            end_index = temp;
+        }
+        
+        for (let i = start_index; i <= end_index; ++i) {
+            selected_columns.push(columns[i]);
+        }
+        
+        return selected_columns;
+    },
+    
+    get_csv_partitions(csv, partition_selector) {
+        if (partition_selector === null) return {csv: csv.slice()};
+        
+        const columns = Object.keys(csv[0]);
+        const partition_column = get_column_by_selector(columns, partition_selector);
+        const partitions = {};
+        
+        for (let i = 0; i < csv.length; ++i) {
+            let partition_name = csv[i][partition_column];
+            let lower_val = partition_name.toLowerCase();
+            
+            if (lower_val !== "" && lower_val !== "off" && lower_val === "no") { 
+                if (typeof partitions[partition_name] === "undefined") {
+                    partitions[partition_name] = [];
+                }
+                
+                partitions[partition_name].push(csv[i]);
+            }
+        }
+        
+        return partitions;
+    },
+    
+    get_column_by_selector: function(columns, selector) {
+        // convert numbers to num - 1, so that human-readable "1" becomes the first column
+        // convert letters like Excel columns, so "A" is 0, "B" is 1, "AA" is 27
+        // columns can also be written out in full, so column "Trial Type" would work too
+        const raw_selector_search = columns.indexOf(selector);
+        
+        if (raw_selector_search > -1) return columns[raw_selector_search];
+        
+        let index;
+        
+        if (helper.is_numeric(selector)) {
+            index = selector - 1;
+        }
+        
+        if (/^[a-z]+$/.test(selector)) {
+            index = get_index_from_column_label(selector);
+        }
+            
+        if (!(index in columns)) {
+            throw `Column selector "${selector}" was identified as column `
+                + `number "${index}", but there are only ${columns.length}`
+                + ` columns to choose from.`;
+        } else {
+            return columns[index];
+        }
+    },
+    
+    get_index_from_column_label: function(label) {
+        // converts "a" to 0, "c" to 2, "aa" to 26, "ac" to 28
+        let index = -1;
+        let place = 26 ** (label.length - 1);
+        
+        for (let i = 0; i < label.length; ++i) {
+            index += (label.charCodeAt(i) - 96) * place;
+            place /= 26;
+        }
+        
+        return index;
+    },
+    
+    get_seeded_random: function(shuffle_seed) {
+        let seed = typeof shuffle_seed === "undefined" || String(shuffle_seed) === ""
+                 ? String(Math.random())
+                 : String(shuffle_seed);
+        
+        return new Math.seedrandom(seed);
+    },
+    
+    get_shuffle_settings: function(header) {
+        if (header.substring(0, 7) === "Shuffle") {
+            return this.parse_shuffle(header);
+        } else {
+            return false;
+        }
+    },
+    
+    parse_shuffle: function(header) {
+        // remove multiple spaces, because that is always a typo and annoyingly hard to see
+        header = header.replace(/ +/g, " ").toLowerCase();
+        const header_split = header.split(";").map(part => part.trim());
+        const shuffle_type = this.get_shuffle_type(header_split.shift());
+        const [targets, within] = this.get_shuffle_targets_and_within(header_split);
+        
+        return {type: shuffle_type, targets: targets, within: within};
+    },
+    
+    get_shuffle_type: function(shuffle_header) {
+        if (shuffle_header.substring(0, 5) === "block") {
+            return "block";
+        } else {
+            return "row";
+        }
+    },
+    
+    get_shuffle_targets_and_within: function(header_parts) {
+        let targets = null,
+            within = null;
+        
+        for (let i = 0; i < header_parts.length; ++i) {
+            if (header_parts[i].substring(0, 7) === "affects") {
+                targets = header_parts[i].substring(7).trim();
+            } else if (header_parts[i].substring(0, 6) === "within") {
+                within = header_parts[i].substring(6).trim();
+            }
+        }
+        
+        return [targets, within];
+    },
+    
+    parse_column_selector: function(selector, headers) {
+        let indices = helper.parse_range_str(selector);
+        // convert numbers from human to machine (i.e., make the first number 0 instead of 1)
+        return indices.map(index => {
+            if (helper.is_numeric(index)) return Number(index) - 1;
+        });
+    }
 };
