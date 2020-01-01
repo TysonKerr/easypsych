@@ -134,7 +134,8 @@ const cell_colors = {
     cell_class_lookup: {},
     input: null,
     selecting: 0, // 1 for selecting, -1 for deselecting
-    selecting_bgc: "rgb(126, 254, 254)",
+    selecting_bgc: "rgb(126, 190, 254)",
+    selecting_outline: "2px solid #be0000",
     
     init: function() {
         this.input = document.getElementById("cell-color-input");
@@ -142,6 +143,7 @@ const cell_colors = {
         this.rules = this.sheet.cssRules || this.sheet.rules;
         
         this.input.addEventListener("input", e => this.set_color(e.target.value));
+        this.input.addEventListener("change", e => console.log("changing"));
 
         document.addEventListener("mousedown", event => {
             if (event.target.classList.contains("shuffle-cell")) {
@@ -189,9 +191,20 @@ const cell_colors = {
     },
     
     set_color: function(color) {
+        let rgb = color.match(/#(..)(..)(..)/).slice(1).map(val => parseInt(val, 16));
+        
+        const text_color = this.get_contrast_color(...rgb);
+        
         this.selected_cell_classes.forEach(cell_class => {
-            this.get_rule(cell_class).style.backgroundColor = color;
+            const rule = this.get_rule(cell_class);
+            rule.style.backgroundColor = color;
+            rule.style.color = text_color;
         });
+    },
+    
+    get_contrast_color: function(r, g, b) {
+        // from Mark Ransom @ https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
+        return (r*0.299 + g*0.587 + b*0.114) > 186 ? "black" : "white";
     },
     
     get_rule: function(cell_class) {
@@ -226,7 +239,7 @@ const cell_colors = {
     
     add_cell_selecting_style: function(cell_class) {
         const rule = this.get_rule(cell_class);
-        rule.style.outline = "2px solid blue";
+        rule.style.outline = this.selecting_outline;
         
         if (rule.style.backgroundColor === "" || rule.style.backgroundColor === "rgb(255, 255, 255)") {
             rule.style.backgroundColor = this.selecting_bgc;

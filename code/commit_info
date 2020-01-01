@@ -1,8 +1,6 @@
-45 shuffles 6
+45 shuffles 7
 
 Previous Commit info:
-2019-12-31 15:02:37 -0800
-6a5f0ee1e15eea4059a91df171000ce40e3a9885
-move shuffles test to own folder
-
-also split file into 3 files
+2019-12-31 16:29:10 -0800
+f484a12bd70b4fdbe50d46415b78930200c67f5e
+let multiple cells be selected in shuffle tests
