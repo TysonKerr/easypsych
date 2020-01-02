@@ -2,6 +2,26 @@ body {
     background-color: #adc9e6;
 }
 
+#cell-tooltip {
+    display: none;
+    position: absolute;
+    font-family: monospace;
+    padding: 1px 4px;
+    border: 1px solid black;
+    pointer-events: none;
+    user-select: none;
+    font-weight: bold;
+    box-sizing: border-box;
+    padding: 1px 4px;
+}
+#cell-tooltip.shown {
+    display: block;
+}
+
+#cell-tooltip:empty:after {
+    content: "\a0";
+}
+
 #cell-display {
     position: fixed;
     border-bottom: 1px solid black;

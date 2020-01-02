@@ -1,9 +1,12 @@
-45 shuffles 14
+45 shuffles 15
 
 Previous Commit info:
-2020-01-01 20:55:45 -0800
-94abd388dcbc8230a4366a1e330c2974d9372420
-fixed bug in CSV shuffle with "within" feature
+2020-01-02 01:35:12 -0800
+91e84e8fca6b92926f7f0c01b61c40c38b484668
+added block shuffles
 
-also added some styling to shuffle tests
-	cell contents of hovered cell are displayed at the top
+added demos for block shuffles
+
+changed how shuffles work. now each individual function returns an
+array mapping old indices to new indices, and a more general
+function actually handles the swapping

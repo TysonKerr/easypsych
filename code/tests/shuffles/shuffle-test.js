@@ -2,24 +2,55 @@
 
 const shuffle_demos = {
     csvs: [],
+    tooltip: null,
     
     init: function() {
         const container = document.getElementById("shuffle-demo-container");
         const cell_display = document.getElementById("cell-display");
+        this.cell_tooltip = document.getElementById("cell-tooltip");
         
-        container.addEventListener("click", event => {
-            if (event.target.tagName === "BUTTON") {
-                this.reshuffle_demo(event.target.closest(".shuffle-demo"));
+        container.addEventListener("click", e => {
+            if (e.target.tagName === "BUTTON") {
+                this.reshuffle_demo(e.target.closest(".shuffle-demo"));
+            }
+        });
+        
+        container.addEventListener("mousedown", e => {
+            if (e.target.tagName === "SPAN") {
+                setTimeout(() => this.set_tooltip(e.target), 0);
             }
         });
         
         container.addEventListener("mouseover", e => {
             if (e.target.tagName === "SPAN") {
+                setTimeout(() => this.set_tooltip(e.target), 0);
                 cell_display.textContent = e.target.textContent;
-            } else {
+            } else if (e.target.closest("table") === null) {
+                this.cell_tooltip.className = "";
+                this.cell_tooltip.style = "";
                 cell_display.textContent = "";
             }
         });
+    },
+    
+    set_tooltip: function(cell) {
+        const cell_tooltip = this.cell_tooltip;
+        cell_tooltip.textContent = cell.textContent;
+        cell_tooltip.className = "shown";
+        const bounds = cell.getBoundingClientRect();
+        cell_tooltip.style.top  = (window.pageYOffset + bounds.top  - 1) + "px";
+        cell_tooltip.style.left = (window.pageXOffset + bounds.left - 1) + "px";
+        cell_tooltip.style.minWidth = (bounds.right - bounds.left + 2) + "px";
+        
+        if (1 in cell.classList) {
+            cell_tooltip.classList.add(cell.classList[1]);
+        }
+        
+        cell_tooltip.style.backgroundColor = "";
+        
+        if (getComputedStyle(cell_tooltip).backgroundColor === "rgba(0, 0, 0, 0)") {
+            cell_tooltip.style.backgroundColor = "white";
+        }
     },
     
     add: function(csv_lines) {
