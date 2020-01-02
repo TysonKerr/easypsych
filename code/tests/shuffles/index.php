@@ -38,6 +38,16 @@ shuffle_demos.add([
     ["2.4----",  "Ice cream", "group b"],
     ["2.5-----", "Juice",     "group b"],
 ]);
+
+shuffle_demos.add([
+    ["Cue", "Answer Stem", "Answer", "Value", "Shuffle; Affects Cue::Answer", "Shuffle; Affects Value"],
+    ["a", "ap", "apple", "1", "foods", "vals"],
+    ["b", "ba", "banana", "2", "foods", "vals"],
+    ["c", "cu", "cucumber", "3", "foods", "vals"],
+    ["d", "do", "dog", "4", "animals", "vals"],
+    ["e", "el", "elephant", "5", "animals", "vals"],
+    ["f", "fe", "ferret", "6", "animals", "vals"],
+]);
 </script>
 
 </body>

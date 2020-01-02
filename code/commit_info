@@ -1,6 +1,6 @@
-45 shuffles 11
+45 shuffles 12
 
 Previous Commit info:
-2020-01-01 06:15:51 -0800
-807b12e6250bb29a33da1b450b2c207eab917ccc
-adjusted shuffle tests text styling
+2020-01-01 16:01:21 -0800
+8f92e64f79ceb37d8aa3843b2e8839940f48c6bc
+made shuffle test coloring use w3c formula

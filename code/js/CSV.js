@@ -85,8 +85,8 @@ var CSV = {
         return csv;
     },
     
-    shuffle_by_column: function(csv, header, random) {
-        const settings = this.get_shuffle_settings(header);
+    shuffle_by_column: function(csv, shuffle_col, random) {
+        const settings = this.get_shuffle_settings(shuffle_col);
         
         if (!settings) return; // in this case, col is not a shuffle column
         
@@ -94,48 +94,57 @@ var CSV = {
         const target_columns = this.get_target_columns(Object.keys(csv[0]), settings.targets);
         const shuffle = settings.type === "block" ? this.shuffle_block : this.shuffle_rows;
         
+        // the shuffle column should always include itself
+        if (!target_columns.includes(shuffle_col)) target_columns.push(shuffle_col);
+        
         Object.values(partitions).forEach(partition => 
-            shuffle.call(this, partition, target_columns, random)
+            shuffle.call(this, partition, shuffle_col, target_columns, random)
         );
     },
     
-    shuffle_block: function(csv) {
+    shuffle_block: function(rows) {
         
     },
     
-    shuffle_rows: function(csv, target_columns, random) {
-        const shuffles = {};
+    shuffle_rows: function(rows, shuffle_col, target_columns, random) {
+        const row_groups = this.group_row_indices_by_shuffle_val(rows, shuffle_col);
         
-        for (let i = 0; i < csv.length; ++i) {
-            const shuffle_val = String(csv[i]["Shuffle"]);
-            const val_lower = shuffle_val.toLowerCase();
-            
-            if (val_lower === "" || val_lower === "off" || val_lower === "no") continue;
-            
-            if (!(csv[i]["Shuffle"] in shuffles)) {
-                shuffles[csv[i]["Shuffle"]] = [];
-            }
-            
-            shuffles[shuffle_val].push(i);
-        }
-        
-        for (let shuffle_val in shuffles) {
-            for (let i = shuffles[shuffle_val].length - 1; i > 0; --i) {
+        for (let shuffle_val in row_groups) {
+            for (let i = row_groups[shuffle_val].length - 1; i > 0; --i) {
                 let j = Math.floor(random() * (i + 1));
                 
                 if (i !== j) {
-                    let row_i = shuffles[shuffle_val][i];
-                    let row_j = shuffles[shuffle_val][j];
+                    let row_i = row_groups[shuffle_val][i];
+                    let row_j = row_groups[shuffle_val][j];
                     
                     for (let k = 0; k < target_columns.length; ++k) {
                         let col = target_columns[k];
-                        let temp = csv[row_i][col];
-                        csv[row_i][col] = csv[row_j][col];
-                        csv[row_j][col] = temp;
+                        let temp = rows[row_i][col];
+                        rows[row_i][col] = rows[row_j][col];
+                        rows[row_j][col] = temp;
                     }
                 }
             }
         }
+    },
+    
+    group_row_indices_by_shuffle_val: function(rows, shuffle_col) {
+        const index_groups = {};
+        
+        for (let i = 0; i < rows.length; ++i) {
+            const shuffle_val = String(rows[i][shuffle_col]);
+            const val_lower = shuffle_val.toLowerCase();
+            
+            if (val_lower === "" || val_lower === "off" || val_lower === "no") continue;
+            
+            if (!(shuffle_val in index_groups)) {
+                index_groups[shuffle_val] = [];
+            }
+            
+            index_groups[shuffle_val].push(i);
+        }
+        
+        return index_groups;
     },
     
     get_target_columns: function(columns, targets) {
@@ -214,7 +223,7 @@ var CSV = {
         }
         
         if (/^[a-z]+$/.test(selector)) {
-            index = get_index_from_column_label(selector);
+            index = this.get_index_from_column_label(selector);
         }
             
         if (!(index in columns)) {
@@ -257,7 +266,7 @@ var CSV = {
     
     parse_shuffle: function(header) {
         // remove multiple spaces, because that is always a typo and annoyingly hard to see
-        header = header.replace(/ +/g, " ").toLowerCase();
+        header = header.replace(/ +/g, " ");
         const header_split = header.split(";").map(part => part.trim());
         const shuffle_type = this.get_shuffle_type(header_split.shift());
         const [targets, within] = this.get_shuffle_targets_and_within(header_split);
@@ -266,7 +275,7 @@ var CSV = {
     },
     
     get_shuffle_type: function(shuffle_header) {
-        if (shuffle_header.substring(0, 5) === "block") {
+        if (shuffle_header.substring(0, 5).toLowerCase() === "block") {
             return "block";
         } else {
             return "row";
@@ -278,9 +287,9 @@ var CSV = {
             within = null;
         
         for (let i = 0; i < header_parts.length; ++i) {
-            if (header_parts[i].substring(0, 7) === "affects") {
+            if (header_parts[i].substring(0, 7).toLowerCase() === "affects") {
                 targets = header_parts[i].substring(7).trim();
-            } else if (header_parts[i].substring(0, 6) === "within") {
+            } else if (header_parts[i].substring(0, 6).toLowerCase() === "within") {
                 within = header_parts[i].substring(6).trim();
             }
         }
