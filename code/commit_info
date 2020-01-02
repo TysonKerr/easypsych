@@ -1,6 +1,8 @@
-45 shuffles 16
+45 shuffles 17
 
 Previous Commit info:
-2020-01-02 03:48:33 -0800
-694dea48209f4bee2b563f30122c117a144810db
-made overflowing cells visible in shuffle demo
+2020-01-02 04:28:23 -0800
+12e01a59f08e42dcca68d2abe165a9ff0c34ce7e
+added hovering style to shuffle tests
+
+also refactored code a bit

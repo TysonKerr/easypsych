@@ -156,15 +156,21 @@ const cell_colors = {
 
         document.addEventListener("mousedown", e => {
             if (e.target.classList.contains("shuffle-cell")) {
+                // they clicked a cell
                 this.process_cell_mousedown(e.target, e.ctrlKey);
             } else if (e.ctrlKey) {
+                // they didnt click a cell, but they were holding ctrl
                 this.selecting = 1;
-            } else if (e.target.closest(".csv-pair-container > div > div") !== null) {
+            } else if (e.target.closest("table") !== null) {
+                // they didnt click a cell and they weren't holding ctrl, but they
+                // clicked on the border in between cells
                 this.clear_selected_cell_classes();
                 this.selecting = 1;
             } else if (e.target !== this.input
                 && e.target.tagName !== "BUTTON"
+                && e.target.closest(".csv-pair-container > div > div") === null
             ) {
+                // they didnt click on either the shuffle button, the scrollbar, or the color picker
                 this.selecting = 0;
                 this.end_input();
             }
