@@ -2,7 +2,7 @@ body {
     background-color: #adc9e6;
 }
 
-#cell-tooltip {
+#cell-overlay {
     display: none;
     position: absolute;
     font-family: monospace;
@@ -14,15 +14,15 @@ body {
     box-sizing: border-box;
     padding: 1px 4px;
 }
-#cell-tooltip.shown {
+#cell-overlay.shown {
     display: block;
 }
 
-#cell-tooltip:empty:after {
+#cell-overlay:empty:after {
     content: "\a0";
 }
 
-#cell-display {
+#cell-info-display {
     position: fixed;
     border-bottom: 1px solid black;
     background-color: white;
@@ -35,7 +35,7 @@ body {
     font-size: 140%;
 }
 
-#cell-display:empty:after {
+#cell-info-display:empty:after {
     content: "\a0";
 }
 

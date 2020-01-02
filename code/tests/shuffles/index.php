@@ -12,8 +12,8 @@
 </head>
 <body>
 
-<div id="cell-display"></div>
-<div id="cell-tooltip"></div>
+<div id="cell-info-display"></div>
+<div id="cell-overlay"></div>
 
 <div id="shuffle-demo-container"></div>
 

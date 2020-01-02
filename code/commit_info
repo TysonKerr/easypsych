@@ -1,12 +1,6 @@
-45 shuffles 15
+45 shuffles 16
 
 Previous Commit info:
-2020-01-02 01:35:12 -0800
-91e84e8fca6b92926f7f0c01b61c40c38b484668
-added block shuffles
-
-added demos for block shuffles
-
-changed how shuffles work. now each individual function returns an
-array mapping old indices to new indices, and a more general
-function actually handles the swapping
+2020-01-02 03:48:33 -0800
+694dea48209f4bee2b563f30122c117a144810db
+made overflowing cells visible in shuffle demo

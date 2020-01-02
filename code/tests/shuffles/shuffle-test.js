@@ -2,12 +2,10 @@
 
 const shuffle_demos = {
     csvs: [],
-    tooltip: null,
     
     init: function() {
         const container = document.getElementById("shuffle-demo-container");
-        const cell_display = document.getElementById("cell-display");
-        this.cell_tooltip = document.getElementById("cell-tooltip");
+        const cell_info_display = document.getElementById("cell-info-display");
         
         container.addEventListener("click", e => {
             if (e.target.tagName === "BUTTON") {
@@ -15,42 +13,13 @@ const shuffle_demos = {
             }
         });
         
-        container.addEventListener("mousedown", e => {
-            if (e.target.tagName === "SPAN") {
-                setTimeout(() => this.set_tooltip(e.target), 0);
-            }
-        });
-        
         container.addEventListener("mouseover", e => {
             if (e.target.tagName === "SPAN") {
-                setTimeout(() => this.set_tooltip(e.target), 0);
-                cell_display.textContent = e.target.textContent;
+                cell_info_display.textContent = e.target.textContent;
             } else if (e.target.closest("table") === null) {
-                this.cell_tooltip.className = "";
-                this.cell_tooltip.style = "";
-                cell_display.textContent = "";
+                cell_info_display.textContent = "";
             }
         });
-    },
-    
-    set_tooltip: function(cell) {
-        const cell_tooltip = this.cell_tooltip;
-        cell_tooltip.textContent = cell.textContent;
-        cell_tooltip.className = "shown";
-        const bounds = cell.getBoundingClientRect();
-        cell_tooltip.style.top  = (window.pageYOffset + bounds.top  - 1) + "px";
-        cell_tooltip.style.left = (window.pageXOffset + bounds.left - 1) + "px";
-        cell_tooltip.style.minWidth = (bounds.right - bounds.left + 2) + "px";
-        
-        if (1 in cell.classList) {
-            cell_tooltip.classList.add(cell.classList[1]);
-        }
-        
-        cell_tooltip.style.backgroundColor = "";
-        
-        if (getComputedStyle(cell_tooltip).backgroundColor === "rgba(0, 0, 0, 0)") {
-            cell_tooltip.style.backgroundColor = "white";
-        }
     },
     
     add: function(csv_lines) {
@@ -173,25 +142,35 @@ const cell_colors = {
     selecting: 0, // 1 for selecting, -1 for deselecting
     selecting_bgc: "rgb(126, 190, 254)",
     selecting_outline: "2px solid #be0000",
+    hover_class: null,
+    hovering_color: "rgb(53, 225, 104)",
+    cell_overlay: null,
     
     init: function() {
         this.input = document.getElementById("cell-color-input");
         this.sheet = document.getElementById("cell-styles").sheet;
         this.rules = this.sheet.cssRules || this.sheet.rules;
+        this.cell_overlay = document.getElementById("cell-overlay");
         
         this.input.addEventListener("input", e => this.set_color(e.target.value));
 
-        document.addEventListener("mousedown", event => {
-            if (event.target.classList.contains("shuffle-cell")) {
-                this.process_cell_mousedown(event.target, event.ctrlKey);
-            } else if (event.ctrlKey) {
+        document.addEventListener("mousedown", e => {
+            if (e.target.classList.contains("shuffle-cell")) {
+                this.process_cell_mousedown(e.target, e.ctrlKey);
+            } else if (e.ctrlKey) {
                 this.selecting = 1;
-            } else if (event.target !== this.input
-                && event.target.tagName !== "BUTTON"
-                && event.target.closest(".csv-pair-container > div > div") === null
+            } else if (e.target.closest(".csv-pair-container > div > div") !== null) {
+                this.clear_selected_cell_classes();
+                this.selecting = 1;
+            } else if (e.target !== this.input
+                && e.target.tagName !== "BUTTON"
             ) {
                 this.selecting = 0;
                 this.end_input();
+            }
+            
+            if (e.target.tagName === "SPAN") {
+                this.set_cell_overlay(e.target);
             }
         });
         
@@ -200,12 +179,74 @@ const cell_colors = {
         });
         
         document.addEventListener("mouseover", e => {
-            if (this.selecting === 0) return;
-            
             if (e.target.classList.contains("shuffle-cell")) {
-                this.select_cell(e.target);
+                this.set_hover_status(e.target);
+                
+                if (this.selecting !== 0) {
+                    this.select_cell(e.target);
+                }
+            } else {
+                this.set_hover_status(null);
+            }
+            
+            if (e.target.tagName === "SPAN") {
+                this.set_cell_overlay(e.target);
+            } else if (e.target.closest("table") === null) {
+                this.cell_overlay.className = "";
+                this.cell_overlay.style = "";
             }
         });
+    },
+    
+    set_cell_overlay: function(cell) {
+        const overlay = this.cell_overlay;
+        overlay.textContent = cell.textContent;
+        overlay.className = "shown";
+        const bounds = cell.getBoundingClientRect();
+        overlay.style.top  = (window.pageYOffset + bounds.top  - 1) + "px";
+        overlay.style.left = (window.pageXOffset + bounds.left - 1) + "px";
+        overlay.style.minWidth = (bounds.right - bounds.left + 2) + "px";
+        
+        if (1 in cell.classList) {
+            overlay.classList.add(cell.classList[1]);
+        }
+        
+        overlay.style.backgroundColor = "";
+        
+        if (getComputedStyle(overlay).backgroundColor === "rgba(0, 0, 0, 0)") {
+            overlay.style.backgroundColor = "white";
+        }
+    },
+    
+    set_hover_status: function(cell) {
+        if (this.hover_class !== null) {
+            this.remove_hover_styling();
+        }
+        
+        if (cell === null) {
+            this.hover_class = null;
+            return;
+        }
+        
+        const cell_class = cell.classList[1];
+        this.hover_class = cell_class;
+        const rule = this.get_rule(cell_class);
+        
+        rule.style.fontWeight = "bold";
+        
+        if (rule.style.backgroundColor === "") {
+            rule.style.backgroundColor = this.hovering_color;
+        }
+    },
+    
+    remove_hover_styling: function() {
+        const rule = this.get_rule(this.hover_class);
+        
+        rule.style.fontWeight = "unset";
+        
+        if (rule.style.backgroundColor === this.hovering_color) {
+            rule.style.backgroundColor = "";
+        }
     },
     
     process_cell_mousedown: function(cell, ctrl_key) {
@@ -286,7 +327,10 @@ const cell_colors = {
         const rule = this.get_rule(cell_class);
         rule.style.outline = this.selecting_outline;
         
-        if (rule.style.backgroundColor === "" || rule.style.backgroundColor === "rgb(255, 255, 255)") {
+        if (rule.style.backgroundColor === ""
+            || rule.style.backgroundColor === "rgb(255, 255, 255)"
+            || rule.style.backgroundColor === this.hovering_color
+        ) {
             rule.style.backgroundColor = this.selecting_bgc;
         }
     },
