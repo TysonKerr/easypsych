@@ -1,8 +1,9 @@
-45 shuffles 13
+45 shuffles 14
 
 Previous Commit info:
-2020-01-01 18:33:43 -0800
-0db64065275dacd9d9c279e94f43ee887c922975
-fixed bugs in CSV shuffle functions
+2020-01-01 20:55:45 -0800
+94abd388dcbc8230a4366a1e330c2974d9372420
+fixed bug in CSV shuffle with "within" feature
 
-added demo for new shuffle capabilities to shuffle tests
+also added some styling to shuffle tests
+	cell contents of hovered cell are displayed at the top

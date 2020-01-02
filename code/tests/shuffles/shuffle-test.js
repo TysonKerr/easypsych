@@ -157,6 +157,7 @@ const cell_colors = {
                 this.selecting = 1;
             } else if (event.target !== this.input
                 && event.target.tagName !== "BUTTON"
+                && event.target.closest(".csv-pair-container > div > div") === null
             ) {
                 this.selecting = 0;
                 this.end_input();

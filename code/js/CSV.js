@@ -92,39 +92,129 @@ var CSV = {
         
         const partitions = this.get_csv_partitions(csv, settings.within);
         const target_columns = this.get_target_columns(Object.keys(csv[0]), settings.targets);
-        const shuffle = settings.type === "block" ? this.shuffle_block : this.shuffle_rows;
+        const shuffle_fn = settings.type === "block" ? this.shuffle_block : this.shuffle_rows;
         
         // the shuffle column should always include itself
         if (!target_columns.includes(shuffle_col)) target_columns.push(shuffle_col);
         
-        Object.values(partitions).forEach(partition => 
-            shuffle.call(this, partition, shuffle_col, target_columns, random)
-        );
+        Object.values(partitions).forEach(partition => {
+            this.shuffle_partition(partition, shuffle_col, shuffle_fn, target_columns, random);
+        });
     },
     
-    shuffle_block: function(rows) {
+    shuffle_partition: function(rows, shuffle_col, shuffle_fn, target_columns, random) {
+        let shuffle_vals = this.get_shuffle_vals(rows, shuffle_col);
+        let shuffle_pattern = shuffle_fn.call(this, shuffle_vals, random);
+        let orig_values = [];
         
-    },
-    
-    shuffle_rows: function(rows, shuffle_col, target_columns, random) {
-        const row_groups = this.group_row_indices_by_shuffle_val(rows, shuffle_col);
-        
-        for (let shuffle_val in row_groups) {
-            for (let i = row_groups[shuffle_val].length - 1; i > 0; --i) {
-                let j = Math.floor(random() * (i + 1));
-                
-                if (i !== j) {
-                    let row_i = row_groups[shuffle_val][i];
-                    let row_j = row_groups[shuffle_val][j];
-                    
-                    for (let k = 0; k < target_columns.length; ++k) {
-                        let col = target_columns[k];
-                        let temp = rows[row_i][col];
-                        rows[row_i][col] = rows[row_j][col];
-                        rows[row_j][col] = temp;
-                    }
-                }
+        for (let i = 0; i < shuffle_pattern.length; ++i) {
+            let j = shuffle_pattern[i];
+            
+            // if j is equal to i, no need to swap, the row was randomly assigned to its own position
+            if (j === i) continue;
+            
+            orig_values[i] = {};
+            
+            for (let k = 0; k < target_columns.length; ++k) {
+                let col = target_columns[k];
+                orig_values[i][col] = rows[i][col];
+                let new_values = j in orig_values ? orig_values[j] : rows[j];
+                rows[i][col] = new_values[col];
             }
+        }
+    },
+    
+    get_shuffle_vals: function(rows, shuffle_col) {
+        const shuffle_vals = [];
+        
+        for (let i = 0; i < rows.length; ++i) {
+            let val = String(rows[i][shuffle_col]);
+            let lower = val.toLowerCase();
+            
+            if (lower === "" || lower === "off" || lower === "no") {
+                shuffle_vals.push("");
+            } else {
+                shuffle_vals.push(val);
+            }
+        }
+        
+        return shuffle_vals;
+    },
+    
+    shuffle_block: function(shuffle_vals, random) {
+        let blocks = [];
+        let last_block = null;
+        let current_block = null;
+        let shuffle_blocks = [];
+        
+        for (let i = 0; i < shuffle_vals.length; ++i) {
+            if (shuffle_vals[i] !== last_block) {
+                if (shuffle_vals[i] !== "") {
+                    shuffle_blocks[blocks.length] = blocks.length;
+                }
+                
+                current_block = [];
+                blocks.push(current_block);
+                last_block = shuffle_vals[i];
+            }
+            
+            current_block.push(i);
+        }
+        
+        this.shuffle_obj(shuffle_blocks, random);
+        let new_order = [];
+        
+        for (let i = 0; i < blocks.length; ++i) {
+            let block_index = (i in shuffle_blocks)
+                            ? shuffle_blocks[i]
+                            : i;
+            
+            for (let j = 0; j < blocks[block_index].length; ++j) {
+                new_order.push(blocks[block_index][j]);
+            }
+        }
+        
+        return new_order;
+    },
+    
+    shuffle_rows: function(shuffle_vals, random) {
+        let groups = {};
+        let new_order = Object.keys(shuffle_vals);
+        
+        for (let i = 0; i < shuffle_vals.length; ++i) {
+            const val = shuffle_vals[i];
+            
+            if (!(val in groups)) groups[val] = [];
+            
+            groups[val][i] = i;
+        }
+        
+        for (let val in groups) {
+            if (val === "") continue;
+            
+            this.shuffle_obj(groups[val], random);
+            
+            groups[val].forEach((new_i, old_i) => {
+                if (new_i === old_i) return;
+                
+                new_order[old_i] = new_i;
+            });
+        }
+        
+        return new_order;
+    },
+    
+    shuffle_obj: function(obj, random) {
+        const keys = Object.keys(obj);
+        
+        for (let i = keys.length - 1; i > 0; --i) {
+            let j = Math.floor(random() * (i + 1));
+            
+            if (i === j) continue; // randomly assigning value to same index, no need to actually replace with itself
+            
+            let temp     = obj[keys[i]];
+            obj[keys[i]] = obj[keys[j]];
+            obj[keys[j]] = temp;
         }
     },
     
@@ -275,7 +365,9 @@ var CSV = {
     },
     
     get_shuffle_type: function(shuffle_header) {
-        if (shuffle_header.substring(0, 5).toLowerCase() === "block") {
+        const type_info = shuffle_header.substring(7).trim().toLowerCase();
+        
+        if (type_info.substring(0, 5) === "block") {
             return "block";
         } else {
             return "row";

@@ -67,6 +67,54 @@ shuffle_demos.add([
     ["2.5-----", "Juice",     "yep", "second"],
 ]);
 
+shuffle_demos.add([
+    ["Cue",      "Answer",    "Shuffle Block"],
+    ["0.1",      "---",       ""],
+    ["0.2",      "---",       ""],
+    ["1.1-",     "Apple",     "block a"],
+    ["1.2--",    "Banana",    "block a"],
+    ["1.3---",   "Cucumber",  "block a"],
+    ["0.3",      "---",       ""],
+    ["0.4",      "---",       ""],
+    ["2.1-",     "Flapjack",  "block b"],
+    ["2.2--",    "Gelatin",   "block b"],
+    ["2.3---",   "Hummus",    "block b"],
+    ["0.5",      "---",       ""],
+    ["0.6",      "---",       ""],
+]);
+
+shuffle_demos.add([
+    ["Cue",      "Answer",    "Shuffle Block"],
+    ["0.1",      "---",       ""],
+    ["0.2",      "---",       ""],
+    ["1.1-",     "Apple",     "block a"],
+    ["1.2--",    "Banana",    "block a"],
+    ["1.3---",   "Cucumber",  "block a"],
+    ["1.4----",  "Donut",     "block a"],
+    ["0.3",      "---",       ""],
+    ["0.4",      "---",       ""],
+    ["2.2--",    "Gelatin",   "block b"],
+    ["2.3---",   "Hummus",    "block b"],
+    ["0.5",      "---",       ""],
+    ["0.6",      "---",       ""],
+]);
+
+shuffle_demos.add([
+    ["Cue",      "Answer",    "Shuffle Block 2; Within Constraints", "Constraints"],
+    ["0.1",      "---",       "",      , ""],
+    ["0.2",      "---",       "",      , ""],
+    ["1.1-",     "Apple",     "block a", "shuffle this"],
+    ["1.2--",    "Banana",    "block a", "shuffle this"],
+    ["1.3---",   "Cucumber",  "block a", "shuffle this"],
+    ["1.4----",  "Donut",     "block a", "shuffle this"],
+    ["0.3",      "---",       "",      , ""],
+    ["0.4",      "---",       "",      , ""],
+    ["2.2--",    "Gelatin",   "block b", "shuffle this"],
+    ["2.3---",   "Hummus",    "block b", "shuffle this"],
+    ["0.5",      "---",       "",      , ""],
+    ["0.6",      "---",       "",      , ""],
+]);
+
 </script>
 
 </body>
