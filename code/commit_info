@@ -1,6 +1,6 @@
-45 shuffles 19
+45 shuffles 20
 
 Previous Commit info:
-2020-01-02 05:10:53 -0800
-fb4b6901a1e4a5166bccefb5675a7bec1cb0120b
-made shuffle demo styling affect headers
+2020-01-02 05:59:18 -0800
+e75400b2f89e8174e9783a6901b28474cb581d40
+Added column shuffles, along with a demo

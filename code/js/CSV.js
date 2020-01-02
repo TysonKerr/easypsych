@@ -94,6 +94,7 @@ var CSV = {
         const target_columns = this.get_target_columns(Object.keys(csv[0]), settings.targets);
         const shuffle_fn = settings.type === "block"  ? this.shuffle_blocks
                          : settings.type === "column" ? this.shuffle_columns
+                         : settings.type === "list"   ? this.shuffle_lists
                          : this.shuffle_rows;
         
         // block-shuffled rows should probably take their labels with them
@@ -172,6 +173,40 @@ var CSV = {
         }
         
         return shuffle_vals;
+    },
+    
+    shuffle_lists: function(shuffle_vals, random) {
+        const lists = {};
+        const pattern = [];
+        
+        for (let i = 0; i < shuffle_vals.length; ++i) {
+            if (shuffle_vals[i] === "") continue;
+            
+            if (!(shuffle_vals[i] in lists)) {
+                lists[shuffle_vals[i]] = {index: 0, rows: []};
+            }
+            
+            lists[shuffle_vals[i]].rows.push(i);
+        }
+        
+        this.shuffle_obj(lists, random);
+        
+        for (let i = 0; i < shuffle_vals.length; ++i) {
+            if (shuffle_vals[i] === "") {
+                pattern.push(i);
+                continue;
+            }
+            
+            let list = lists[shuffle_vals[i]];
+            pattern.push(list.rows[list.index]);
+            ++list.index;
+            
+            if (list.index === list.rows.length) {
+                list.index = 0;
+            }
+        }
+        
+        return pattern;
     },
     
     shuffle_columns: function(target_columns, random) {
@@ -417,6 +452,8 @@ var CSV = {
             return "block";
         } else if (type_info.substring(0, 6) === "column") {
             return "column";
+        } else if (type_info.substring(0, 4) === "list") {
+            return "list";
         } else {
             return "row";
         }
