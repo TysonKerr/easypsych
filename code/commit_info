@@ -1,6 +1,8 @@
-45 shuffles 12
+45 shuffles 13
 
 Previous Commit info:
-2020-01-01 16:01:21 -0800
-8f92e64f79ceb37d8aa3843b2e8839940f48c6bc
-made shuffle test coloring use w3c formula
+2020-01-01 18:33:43 -0800
+0db64065275dacd9d9c279e94f43ee887c922975
+fixed bugs in CSV shuffle functions
+
+added demo for new shuffle capabilities to shuffle tests

@@ -5,10 +5,19 @@ const shuffle_demos = {
     
     init: function() {
         const container = document.getElementById("shuffle-demo-container");
+        const cell_display = document.getElementById("cell-display");
         
         container.addEventListener("click", event => {
             if (event.target.tagName === "BUTTON") {
                 this.reshuffle_demo(event.target.closest(".shuffle-demo"));
+            }
+        });
+        
+        container.addEventListener("mouseover", e => {
+            if (e.target.tagName === "SPAN") {
+                cell_display.textContent = e.target.textContent;
+            } else {
+                cell_display.textContent = "";
             }
         });
     },
@@ -75,23 +84,20 @@ const shuffle_demos = {
     
         container.insertAdjacentHTML("beforeend", 
             "<div class='shuffle-demo' data-csv='" + csv_id + "'>"
-                + "<div class='csv-pair-container'><div>"
+                + "<div class='csv-pair-container'><div><div>"
                 + this.get_csv_html(unshuffled_csv)
-                + "</div><div>"
+                + "</div></div><div><div>"
                 + this.get_csv_html(shuffled_csv)
-                + "</div></div>"
-                + "<div><button class='reshuffle-button'>Reshuffle</button></div>"
+                + "</div></div></div>"
+                + "<div class='reshuffle-button-container'><button class='reshuffle-button'>Reshuffle</button></div>"
             + "</div>"
         );
     },
     
     get_csv_html: function(csv) {
-        const cols = Object.keys(csv[0]).length,
-              rows = csv.length;
-        
-        let html = `<table style='--cols: ${cols}; --rows: ${rows};'> <thead> <tr> <th>`
-            + Object.keys(csv[0]).join("</th> <th>")
-            + "</th> </tr> </thead> <tbody>";
+        let html = `<table> <thead> <tr> <th><span>`
+            + Object.keys(csv[0]).join("</span></th> <th><span>")
+            + "</span></th> </tr> </thead> <tbody>";
         
         for (let i = 0; i < csv.length; ++i) {
             html += "<tr> <td>" + Object.values(csv[i]).map(cell => cell.get_wrapped_value()).join("</td> <td>") + "</td> </tr>";
@@ -105,7 +111,7 @@ const shuffle_demos = {
         const csv_index = demo_element.dataset.csv;
         const csv_shuffled = this.clone_csv(this.csvs[csv_index]);
         CSV.shuffle(csv_shuffled);
-        const shuffled_container = demo_element.querySelector(".csv-pair-container > div:last-child");
+        const shuffled_container = demo_element.querySelector(".csv-pair-container > div:last-child > div");
         shuffled_container.innerHTML = this.get_csv_html(csv_shuffled);
     }
 };

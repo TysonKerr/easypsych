@@ -189,14 +189,14 @@ var CSV = {
         if (partition_selector === null) return {csv: csv.slice()};
         
         const columns = Object.keys(csv[0]);
-        const partition_column = get_column_by_selector(columns, partition_selector);
+        const partition_column = this.get_column_by_selector(columns, partition_selector);
         const partitions = {};
         
         for (let i = 0; i < csv.length; ++i) {
-            let partition_name = csv[i][partition_column];
+            let partition_name = String(csv[i][partition_column]);
             let lower_val = partition_name.toLowerCase();
             
-            if (lower_val !== "" && lower_val !== "off" && lower_val === "no") { 
+            if (lower_val !== "" && lower_val !== "off" && lower_val !== "no") { 
                 if (typeof partitions[partition_name] === "undefined") {
                     partitions[partition_name] = [];
                 }

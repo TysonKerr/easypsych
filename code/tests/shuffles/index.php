@@ -12,6 +12,8 @@
 </head>
 <body>
 
+<div id="cell-display"></div>
+
 <div id="shuffle-demo-container"></div>
 
 <input type="color" id="cell-color-input">
@@ -48,6 +50,23 @@ shuffle_demos.add([
     ["e", "el", "elephant", "5", "animals", "vals"],
     ["f", "fe", "ferret", "6", "animals", "vals"],
 ]);
+
+shuffle_demos.add([
+    ["Cue",      "Answer",    "Shuffle; Within That Column", "That Column"],
+    ["2",        "---",       "",    ""],
+    ["3",        "---",       "off", ""],
+    ["1.1-",     "Apple",     "yep", "first"],
+    ["1.2--",    "Banana",    "yep", "first"],
+    ["1.3---",   "Cucumber",  "yep", "first"],
+    ["1.4----",  "Donut",     "yep", "first"],
+    ["1.5-----", "Enchilada", "yep", "first"],
+    ["2.1-",     "Flapjack",  "yep", "second"],
+    ["2.2--",    "Gelatin",   "yep", "second"],
+    ["2.3---",   "Hummus",    "yep", "second"],
+    ["2.4----",  "Ice cream", "yep", "second"],
+    ["2.5-----", "Juice",     "yep", "second"],
+]);
+
 </script>
 
 </body>
