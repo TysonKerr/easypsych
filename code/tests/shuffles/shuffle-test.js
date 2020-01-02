@@ -192,7 +192,7 @@ const cell_colors = {
     set_color: function(color) {
         let rgb = color.match(/#(..)(..)(..)/).slice(1).map(val => parseInt(val, 16));
         
-        const text_color = this.get_contrast_color(...rgb);
+        const text_color = this.get_contrast_color(rgb);
         
         this.selected_cell_classes.forEach(cell_class => {
             const rule = this.get_rule(cell_class);
@@ -201,10 +201,17 @@ const cell_colors = {
         });
     },
     
-    get_contrast_color: function(r, g, b) {
-        // from Mark Ransom @ https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
-        // slight adjustments made, raised green bias, lowered overall threshold
-        return (r*0.299 + g*0.6 + b*0.114) > 149 ? "black" : "white";
+    get_contrast_color: function(rgb) {
+        // https://www.w3.org/TR/WCAG20-TECHS/G18.html
+        const weights = [0.2126, 0.7152, 0.0722];
+        const luminance = rgb
+            .map(v => v/255)
+            .map(v => v <= 0.3928 
+                    ? v / 12.92 
+                    : ((v + 0.055)/1.055)**2.4)
+            .map((v, i) => v * weights[i])
+            .reduce((sum, v) => sum + v);
+        return luminance < 0.48 ? "white" : "black";
     },
     
     get_rule: function(cell_class) {

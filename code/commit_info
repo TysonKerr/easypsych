@@ -1,6 +1,6 @@
-45 shuffles 10
+45 shuffles 11
 
 Previous Commit info:
-2020-01-01 06:07:17 -0800
-8bc5ba5a51d7a6abbe423c121c0b31772a474659
-refactored CSV shuffle
+2020-01-01 06:15:51 -0800
+807b12e6250bb29a33da1b450b2c207eab917ccc
+adjusted shuffle tests text styling
