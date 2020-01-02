@@ -14,7 +14,7 @@ const shuffle_demos = {
         });
         
         container.addEventListener("mouseover", e => {
-            if (e.target.tagName === "SPAN") {
+            if (e.target.classList.contains("shuffle-cell")) {
                 cell_info_display.textContent = e.target.textContent;
             } else if (e.target.closest("table") === null) {
                 cell_info_display.textContent = "";
@@ -85,19 +85,21 @@ const shuffle_demos = {
         container.insertAdjacentHTML("beforeend", 
             "<div class='shuffle-demo' data-csv='" + csv_id + "'>"
                 + "<div class='csv-pair-container'><div><div>"
-                + this.get_csv_html(unshuffled_csv)
+                + this.get_csv_html(unshuffled_csv, csv_id)
                 + "</div></div><div><div>"
-                + this.get_csv_html(shuffled_csv)
+                + this.get_csv_html(shuffled_csv, csv_id)
                 + "</div></div></div>"
                 + "<div class='reshuffle-button-container'><button class='reshuffle-button'>Reshuffle</button></div>"
             + "</div>"
         );
     },
     
-    get_csv_html: function(csv) {
-        let html = `<table> <thead> <tr> <th><span>`
-            + Object.keys(csv[0]).join("</span></th> <th><span>")
-            + "</span></th> </tr> </thead> <tbody>";
+    get_csv_html: function(csv, csv_id) {
+        let html = "<table> <thead> <tr>"
+            + Object.keys(csv[0]).map((header, i) => 
+                `<th><span class="shuffle-cell c-${csv_id}-${i}-h">${header}</span></th>`
+            ).join("")
+            + "</tr> </thead> <tbody>";
         
         for (let i = 0; i < csv.length; ++i) {
             html += "<tr> <td>" + Object.values(csv[i]).map(cell => cell.get_wrapped_value()).join("</td> <td>") + "</td> </tr>";
@@ -112,7 +114,7 @@ const shuffle_demos = {
         const csv_shuffled = this.clone_csv(this.csvs[csv_index]);
         CSV.shuffle(csv_shuffled);
         const shuffled_container = demo_element.querySelector(".csv-pair-container > div:last-child > div");
-        shuffled_container.innerHTML = this.get_csv_html(csv_shuffled);
+        shuffled_container.innerHTML = this.get_csv_html(csv_shuffled, csv_index);
     }
 };
 
@@ -158,6 +160,7 @@ const cell_colors = {
             if (e.target.classList.contains("shuffle-cell")) {
                 // they clicked a cell
                 this.process_cell_mousedown(e.target, e.ctrlKey);
+                this.set_cell_overlay(e.target);
             } else if (e.ctrlKey) {
                 // they didnt click a cell, but they were holding ctrl
                 this.selecting = 1;
@@ -174,10 +177,6 @@ const cell_colors = {
                 this.selecting = 0;
                 this.end_input();
             }
-            
-            if (e.target.tagName === "SPAN") {
-                this.set_cell_overlay(e.target);
-            }
         });
         
         document.addEventListener("mouseup", e => {
@@ -187,19 +186,15 @@ const cell_colors = {
         document.addEventListener("mouseover", e => {
             if (e.target.classList.contains("shuffle-cell")) {
                 this.set_hover_status(e.target);
+                this.set_cell_overlay(e.target);
                 
                 if (this.selecting !== 0) {
                     this.select_cell(e.target);
                 }
-            } else {
-                this.set_hover_status(null);
-            }
-            
-            if (e.target.tagName === "SPAN") {
-                this.set_cell_overlay(e.target);
             } else if (e.target.closest("table") === null) {
                 this.cell_overlay.className = "";
                 this.cell_overlay.style = "";
+                this.set_hover_status(null);
             }
         });
     },
@@ -220,7 +215,7 @@ const cell_colors = {
         overlay.style.backgroundColor = "";
         
         if (getComputedStyle(overlay).backgroundColor === "rgba(0, 0, 0, 0)") {
-            overlay.style.backgroundColor = "white";
+            overlay.style.backgroundColor = this.hovering_color;
         }
     },
     

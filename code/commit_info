@@ -1,8 +1,6 @@
-45 shuffles 17
+45 shuffles 18
 
 Previous Commit info:
-2020-01-02 04:28:23 -0800
-12e01a59f08e42dcca68d2abe165a9ff0c34ce7e
-added hovering style to shuffle tests
-
-also refactored code a bit
+2020-01-02 04:37:35 -0800
+93a0c748e7461af518eb67d980b7c45939723fcf
+fixed bug in shuffle demos when clicking on cell borders
