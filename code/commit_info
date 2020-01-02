@@ -1,6 +1,6 @@
-45 shuffles 18
+45 shuffles 19
 
 Previous Commit info:
-2020-01-02 04:37:35 -0800
-93a0c748e7461af518eb67d980b7c45939723fcf
-fixed bug in shuffle demos when clicking on cell borders
+2020-01-02 05:10:53 -0800
+fb4b6901a1e4a5166bccefb5675a7bec1cb0120b
+made shuffle demo styling affect headers

@@ -92,17 +92,50 @@ var CSV = {
         
         const partitions = this.get_csv_partitions(csv, settings.within);
         const target_columns = this.get_target_columns(Object.keys(csv[0]), settings.targets);
-        const shuffle_fn = settings.type === "block" ? this.shuffle_block : this.shuffle_rows;
+        const shuffle_fn = settings.type === "block"  ? this.shuffle_blocks
+                         : settings.type === "column" ? this.shuffle_columns
+                         : this.shuffle_rows;
         
-        // the shuffle column should always include itself
-        if (!target_columns.includes(shuffle_col)) target_columns.push(shuffle_col);
+        // block-shuffled rows should probably take their labels with them
+        if (settings.type === "block"
+            && !target_columns.includes(shuffle_col)
+        ) {
+            target_columns.push(shuffle_col);
+        }
         
         Object.values(partitions).forEach(partition => {
-            this.shuffle_partition(partition, shuffle_col, shuffle_fn, target_columns, random);
+            if (settings.type === "column") {
+                this.shuffle_partition_columns(partition, shuffle_col, shuffle_fn, target_columns, random);
+            } else {
+                this.shuffle_partition_rows(partition, shuffle_col, shuffle_fn, target_columns, random);
+            }
         });
     },
     
-    shuffle_partition: function(rows, shuffle_col, shuffle_fn, target_columns, random) {
+    shuffle_partition_columns: function(rows, shuffle_col, shuffle_fn, target_columns, random) {
+        const shuffle_vals = this.get_shuffle_vals(rows, shuffle_col);
+        const patterns = shuffle_vals
+            .filter((val, i, arr) => arr.indexOf(val) === i && val !== "")
+            .reduce((patterns, val) => {
+                patterns[val] = shuffle_fn.call(this, target_columns, random);
+                return patterns;
+            }, {});
+        
+        for (let i = 0; i < rows.length; ++i) {
+            if (shuffle_vals[i] === "") continue;
+            
+            const orig_values = {};
+            const col_replacements = patterns[shuffle_vals[i]];
+            
+            for (let col in col_replacements) {
+                const col2 = col_replacements[col];
+                orig_values[col] = rows[i][col];
+                rows[i][col] = col2 in orig_values ? orig_values[col2] : rows[i][col2];
+            }
+        }
+    },
+    
+    shuffle_partition_rows: function(rows, shuffle_col, shuffle_fn, target_columns, random) {
         let shuffle_vals = this.get_shuffle_vals(rows, shuffle_col);
         let shuffle_pattern = shuffle_fn.call(this, shuffle_vals, random);
         let orig_values = [];
@@ -141,7 +174,19 @@ var CSV = {
         return shuffle_vals;
     },
     
-    shuffle_block: function(shuffle_vals, random) {
+    shuffle_columns: function(target_columns, random) {
+        const replacements = target_columns.slice();
+        this.shuffle_obj(replacements, random);
+        const shuffle_pattern = {};
+        
+        for (let i = 0; i < target_columns.length; ++i) {
+            shuffle_pattern[target_columns[i]] = replacements[i];
+        }
+        
+        return shuffle_pattern;
+    },
+    
+    shuffle_blocks: function(shuffle_vals, random) {
         let blocks = [];
         let last_block = null;
         let current_block = null;
@@ -312,7 +357,7 @@ var CSV = {
             index = selector - 1;
         }
         
-        if (/^[a-z]+$/.test(selector)) {
+        if (/^[a-z]+$/i.test(selector)) {
             index = this.get_index_from_column_label(selector);
         }
             
@@ -326,6 +371,7 @@ var CSV = {
     },
     
     get_index_from_column_label: function(label) {
+        label = label.toLowerCase();
         // converts "a" to 0, "c" to 2, "aa" to 26, "ac" to 28
         let index = -1;
         let place = 26 ** (label.length - 1);
@@ -369,6 +415,8 @@ var CSV = {
         
         if (type_info.substring(0, 5) === "block") {
             return "block";
+        } else if (type_info.substring(0, 6) === "column") {
+            return "column";
         } else {
             return "row";
         }
