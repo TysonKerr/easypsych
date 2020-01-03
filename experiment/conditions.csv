@@ -6,3 +6,4 @@ demo-nested-files/nested-proc-demo.csv,demo-stim.csv,nested files
 demo-post-trials-proc.csv,demo-stim.csv,post trials
 demo-multi-session-proc.csv,,multi-session
 demo-survey-proc.csv,,surveys
+demo-block-shuffle.csv,demo-stim.csv,shuffles

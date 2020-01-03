@@ -1,0 +1,29 @@
+Stimuli,Trial Type,Max Time,Min Time,Text,Shuffle; Within G,Shuffle Block; Within Phase,Phase
+0,show-text,user,,Get ready to see some word pairs.,,,
+2,word-pair-study,2,,,yes,a,study1
+3,word-pair-study,2,,,yes,a,study1
+4,word-pair-study,2,,,yes,a,study1
+5,word-pair-study,2,,,yes,b,study1
+6,word-pair-study,2,,,yes,b,study1
+7,word-pair-study,2,,,yes,b,study1
+0,show-text,user,,Now get ready for the test.,,,
+2,word-pair-test,user,,,yes,c,test1
+3,word-pair-test,user,,,yes,c,test1
+4,word-pair-test,user,,,yes,c,test1
+5,word-pair-test,user,,,yes,d,test1
+6,word-pair-test,user,,,yes,d,test1
+7,word-pair-test,user,,,yes,d,test1
+0,show-text,user,,Get ready for list 2.,,,
+8,word-pair-study,2,,,yes,e,study2
+9,word-pair-study,2,,,yes,e,study2
+10,word-pair-study,2,,,yes,e,study2
+11,word-pair-study,2,,,yes,f,study2
+12,word-pair-study,2,,,yes,f,study2
+13,word-pair-study,2,,,yes,f,study2
+,show-text,user,,Now get ready for the test.,,,
+8,word-pair-test,user,,,yes,g,test2
+9,word-pair-test,user,,,yes,g,test2
+10,word-pair-test,user,,,yes,g,test2
+11,word-pair-test,user,,,yes,h,test2
+12,word-pair-test,user,,,yes,h,test2
+13,word-pair-test,user,,,yes,h,test2

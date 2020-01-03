@@ -1,6 +1,6 @@
-45 shuffles 25
+45 dev 26
 
 Previous Commit info:
-2020-01-03 03:57:40 -0800
-d2b32bd858b2a93c3961bb198d75627452d88e73
-added ability to load files for shuffle tests
+2020-01-03 04:00:41 -0800
+b53669fcbe62b37a05f759b4fb40eaac284e285d
+moved shuffle demos to root
