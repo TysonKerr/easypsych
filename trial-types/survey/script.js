@@ -4,6 +4,8 @@ trial.fetch_csv("media/surveys/" + trial.get_value("Cue"))
 function display_survey(survey) {
     make_sure_question_names_are_unique(survey);
     
+    document.getElementById("loading-gif").style.display = "none";
+    document.querySelector(".submit-button").classList.add("shown");
     let html = "";
     
     for (let i = 0; i < survey.length;) {
@@ -18,6 +20,7 @@ function display_survey(survey) {
     }
     
     document.getElementById("survey-container").innerHTML = html;
+    trial.autofocus();
 }
 
 function make_sure_question_names_are_unique(survey) {

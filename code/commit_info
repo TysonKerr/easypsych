@@ -1,6 +1,6 @@
-45 dev 30
+45 dev 31
 
 Previous Commit info:
-2020-01-03 06:15:23 -0800
-a2a94f48223afb8d70e2d0e0b590769b2604b615
-added more options for controlling the shuffle seeds of csvs
+2020-01-03 06:28:20 -0800
+933a9e2d43616a9da52a5968281702d897f1df39
+added check to survey trial type that names are unique

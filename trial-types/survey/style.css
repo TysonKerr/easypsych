@@ -10,6 +10,7 @@ body { background-color: #F7F7FF; }
 }
 
 .submit-button { margin-top: 50px; }
+.submit-button:not(.shown) { display: none; }
 
 .standard-question-row {
     display: table-row;
