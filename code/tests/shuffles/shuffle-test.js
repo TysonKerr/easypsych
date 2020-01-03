@@ -43,7 +43,7 @@ const shuffle_demos = {
             const headers = this.get_headers(header);
             type.textContent = shuffle_settings.type;
             targets.textContent = CSV.get_target_columns(headers, shuffle_settings.targets).join(", ");
-            within.textContent = shuffle_settings.within === null ? "whole file" : shuffle_settings.within;
+            within.textContent = shuffle_settings.within === null ? "not constrained" : shuffle_settings.within;
         }
     },
     
@@ -56,14 +56,14 @@ const shuffle_demos = {
             .map(th => th.textContent);
     },
     
-    add: function(csv_lines) {
+    add: function(csv_lines, added_html = "") {
         const csv = this.make_csv(csv_lines);
         const csv_index = this.csvs.length;
         const unshuffled_csv = this.get_csv_clone_with_contents_wrapped(csv, csv_index);
         this.csvs.push(unshuffled_csv);
         const shuffled_csv = this.clone_csv(unshuffled_csv);
         CSV.shuffle(shuffled_csv);
-        this.add_demo_html(csv_index, unshuffled_csv, shuffled_csv);
+        this.add_demo_html(csv_index, unshuffled_csv, shuffled_csv, added_html);
         
     },
     
@@ -113,11 +113,12 @@ const shuffle_demos = {
         return clone;
     },
     
-    add_demo_html: function(csv_id, unshuffled_csv, shuffled_csv) {
+    add_demo_html: function(csv_id, unshuffled_csv, shuffled_csv, added_html) {
         const container = document.getElementById("shuffle-demo-container");
     
         container.insertAdjacentHTML("beforeend", 
             "<div class='shuffle-demo' data-csv='" + csv_id + "'>"
+                + "<div class='shuffle-description'>" + added_html + "</div>"
                 + "<div class='csv-pair-container'><div><div>"
                 + this.get_csv_html(unshuffled_csv, csv_id)
                 + "</div></div><div><div>"

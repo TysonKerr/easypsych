@@ -76,6 +76,7 @@ body {
 }
 
 .shuffle-demo {
+    text-align: center;
     margin-top: 3em;
 }
 .csv-pair-container > div {
@@ -88,6 +89,7 @@ body {
     margin-right: 10px;
 }
 .csv-pair-container > div:last-child {
+    text-align: left;
     margin-left: 10px;
 }
 .csv-pair-container > div > div {
@@ -147,5 +149,22 @@ tbody tr:last-child td { border-bottom: none; }
 }
 
 .reshuffle-button-container {
+    margin-top: 12px;
     text-align: center;
+}
+
+.shuffle-description {
+    display: inline-block;
+    max-width: 800px;
+    margin: auto;
+    padding: 4px 8px;
+    background-color: #DDD;
+    margin: 20px auto;
+    border: 1px solid #5f7286;
+    text-align: left;
+    line-height: 1.5em;
+}
+
+.shuffle-description:empty {
+    display: none;
 }
