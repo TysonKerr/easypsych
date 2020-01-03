@@ -77,10 +77,20 @@ var CSV = {
         if (!(0 in csv)) return csv; // nothing to shuffle, dont waste time
         
         const random = this.get_seeded_random(shuffle_seed);
+        const old_math_random = Math.random;
+        
+        Math.random = function() {
+            console.error("Math.random() was called during a CSV shuffle, "
+                + "rather than the provided random function. This shuffle "
+                + "will not respect the random seed provided.")
+            return old_math_random();
+        };
         
         for (let col in csv[0]) {
             this.shuffle_by_column(csv, col, random);
         }
+        
+        Math.random = old_math_random;
         
         return csv;
     },

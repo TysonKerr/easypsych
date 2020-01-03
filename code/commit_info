@@ -1,6 +1,6 @@
-45 dev 26
+45 dev 27
 
 Previous Commit info:
-2020-01-03 04:00:41 -0800
-b53669fcbe62b37a05f759b4fb40eaac284e285d
-moved shuffle demos to root
+2020-01-03 05:19:21 -0800
+ca172ce276d8b101822058fc9b27552b9d1c57d3
+added demo procedure for block shuffles
