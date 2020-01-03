@@ -1,6 +1,8 @@
-45 dev 28
+45 dev 29
 
 Previous Commit info:
-2020-01-03 05:25:57 -0800
-82073faad1f8ac5c591971f86cf5ae6e0d451826
-added check to CSV shuffles that Math.random isn't used
+2020-01-03 05:33:49 -0800
+cac4df01cb31c596819613a4fc9366f0d8dd058f
+let CSV.fetch turn off shuffles
+
+Also updated shuffle demos to display correct "within" column

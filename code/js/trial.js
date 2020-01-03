@@ -1,11 +1,11 @@
 "use strict";
 var trial = {
     values: null,
-    experiment: null,
+    experiment: window.parent.experiment,
     start_time: 0,
     
-    fetch_csv: function(filename) {
-        return window.parent.experiment.fetch_csv(filename);
+    fetch_csv: function(filename, shuffle_seed_suffix = "") {
+        return this.experiment.fetch_csv(filename, shuffle_seed_suffix);
     },
     
     submit: function(additional_output) {
@@ -19,7 +19,6 @@ var trial = {
     },
     
     init: function() {
-        this.experiment = window.parent.experiment;
         this.start_time = performance.now();
         this.disables.init_min_and_max_time(
             this.get_value("Min Time"),

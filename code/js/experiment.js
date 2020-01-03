@@ -140,8 +140,12 @@ Experiment.prototype = {
         }
     },
     
-    fetch_csv: function(filename) {
-        return CSV.fetch(filename);
+    fetch_csv: function(filename, shuffle_seed_suffix = "") {
+        const seed = this.data.shuffle_seed
+                   + "-" + this.trial_number
+                   + "." + this.post_trial_level
+                   + shuffle_seed_suffix;
+        return CSV.fetch(filename, seed);
     },
     
     add_event_listeners: function() {
