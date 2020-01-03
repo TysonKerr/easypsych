@@ -1,8 +1,6 @@
-45 dev 29
+45 dev 30
 
 Previous Commit info:
-2020-01-03 05:33:49 -0800
-cac4df01cb31c596819613a4fc9366f0d8dd058f
-let CSV.fetch turn off shuffles
-
-Also updated shuffle demos to display correct "within" column
+2020-01-03 06:15:23 -0800
+a2a94f48223afb8d70e2d0e0b590769b2604b615
+added more options for controlling the shuffle seeds of csvs

@@ -2,6 +2,8 @@ trial.fetch_csv("media/surveys/" + trial.get_value("Cue"))
      .then(survey => display_survey(survey));
 
 function display_survey(survey) {
+    make_sure_question_names_are_unique(survey);
+    
     let html = "";
     
     for (let i = 0; i < survey.length;) {
@@ -16,6 +18,33 @@ function display_survey(survey) {
     }
     
     document.getElementById("survey-container").innerHTML = html;
+}
+
+function make_sure_question_names_are_unique(survey) {
+    const names = {};
+    const repeated_names = [];
+    
+    survey.forEach(row => {
+        let name = row["Name"];
+        
+        if (name in names) {
+            repeated_names.push(name);
+        }
+        
+        names[name] = true;
+    });
+    
+    if (repeated_names.length > 0) {
+        let msg = `Survey "${trial.get_value("Cue")}" has repeated question names:\n`
+            + "  " + repeated_names.join(", ")
+            + "\n  Please ensure that all names are unique.";
+        document.getElementById("survey-container").insertAdjacentHTML(
+            "afterend",
+            "<pre style='display: inline-block; text-align: left'>" + msg + "</pre>"
+        );
+        
+        throw msg;
+    }
 }
 
 function create_standard_question(question, input) {

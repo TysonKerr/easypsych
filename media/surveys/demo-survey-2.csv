@@ -1,5 +1,5 @@
 Name,Type,Values,Question,Shuffle
 Understand,textbox,,Does this make sense?,a
 Confident,textbox,,Are you confident in your understanding?,a
-Tired,likert,1::4,How does the survey look?,b
-Fun,likert,1::4,How interested are you in making your own survey?,b
+Looks,likert,1::4,How does the survey look?,b
+Interest,likert,1::4,How interested are you in making your own survey?,b
