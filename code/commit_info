@@ -1,6 +1,6 @@
-45 shuffles 24
+45 shuffles 25
 
 Previous Commit info:
-2020-01-02 21:18:04 -0800
-0a47e33589c754e911b4dfc21f42d97264c537ed
-updated styling of shuffle demos
+2020-01-03 03:57:40 -0800
+d2b32bd858b2a93c3961bb198d75627452d88e73
+added ability to load files for shuffle tests

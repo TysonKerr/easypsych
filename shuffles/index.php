@@ -1,5 +1,5 @@
 <?php
-require dirname(dirname(dirname(__DIR__))) . '/code/php/init.php';
+require dirname(__DIR__) . '/code/php/init.php';
 
 function find_csvs($dir_from_root) {
     $dir = APP_ROOT . "/$dir_from_root";
@@ -54,11 +54,11 @@ function get_file_options_html() {
 <head>
     <title>Shuffle Tests</title>
     <meta charset="utf-8">
-    <base href="../../..">
+    <base href="..">
     <script src="code/vendor/seedrandom.3.0.5.min.js"></script>
     <script src="code/js/helper.js"></script>
     <script src="code/js/CSV.js"></script>
-    <link rel="stylesheet" href="code/tests/shuffles/shuffle-test.css">
+    <link rel="stylesheet" href="shuffles/shuffle-test.css">
     <style id="cell-styles"></style>
 </head>
 <body>
@@ -94,7 +94,7 @@ function get_file_options_html() {
     <div id="file-demo-container"></div>
 </div>
 
-<script src="code/tests/shuffles/shuffle-test.js"></script>
+<script src="shuffles/shuffle-test.js"></script>
 <script>
 "use strict";
 
