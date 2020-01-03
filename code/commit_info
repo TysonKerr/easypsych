@@ -1,6 +1,6 @@
-45 dev 27
+45 dev 28
 
 Previous Commit info:
-2020-01-03 05:19:21 -0800
-ca172ce276d8b101822058fc9b27552b9d1c57d3
-added demo procedure for block shuffles
+2020-01-03 05:25:57 -0800
+82073faad1f8ac5c591971f86cf5ae6e0d451826
+added check to CSV shuffles that Math.random isn't used

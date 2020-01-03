@@ -95,7 +95,7 @@ var CSV = {
         return csv;
     },
     
-    fetch: function(filename) {
+    fetch: function(filename, shuffle_seed) {
         return fetch("code/php/ajax-fetch-csv.php?f=" + encodeURIComponent(filename))
             .then(resp => resp.text()).then(text => {
                 let json_data;
@@ -113,7 +113,7 @@ var CSV = {
                 
                 return json_data;
             })
-            .then(csv_data => this.build(csv_data, filename));
+            .then(csv_data => this.build(csv_data, filename, shuffle_seed));
     },
     
     shuffle_by_column: function(csv, shuffle_col, random) {

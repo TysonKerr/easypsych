@@ -58,7 +58,7 @@ const shuffle_demos = {
                 demos[this.files[file]].classList.remove("hidden");
             } else {
                 e.target.disabled = true;
-                let csv = await CSV.fetch(file);
+                let csv = await CSV.fetch(file, false);
                 e.target.disabled = false;
                 
                 const csv_index = this.create_shuffle_demo(csv);
@@ -88,7 +88,9 @@ const shuffle_demos = {
                                 .join(", ");
             within.innerHTML = shuffle_settings.within === null
                                ? "not constrained"
-                               : "<span class='column-name'>" + shuffle_settings.within + "</span>";
+                               : "<span class='column-name'>"
+                                 + CSV.get_column_by_selector(headers, shuffle_settings.within)
+                                 + "</span>";
         }
     },
     
