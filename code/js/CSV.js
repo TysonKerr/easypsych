@@ -85,6 +85,27 @@ var CSV = {
         return csv;
     },
     
+    fetch: function(filename) {
+        return fetch("code/php/ajax-fetch-csv.php?f=" + encodeURIComponent(filename))
+            .then(resp => resp.text()).then(text => {
+                let json_data;
+                
+                try {
+                    json_data = JSON.parse(text);
+                } catch(error) {
+                    console.error(
+                        "cannot parse JSON data when fetching csv, received following from server:\n"
+                        + text
+                    );
+                    
+                    throw error;
+                }
+                
+                return json_data;
+            })
+            .then(csv_data => this.build(csv_data, filename));
+    },
+    
     shuffle_by_column: function(csv, shuffle_col, random) {
         const settings = this.get_shuffle_settings(shuffle_col);
         

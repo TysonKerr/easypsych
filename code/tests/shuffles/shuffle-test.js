@@ -2,18 +2,21 @@
 
 const shuffle_demos = {
     csvs: [],
+    container: null,
+    files: {},
     
     init: function() {
-        const container = document.getElementById("shuffle-demo-container");
+        this.premade_container = document.getElementById("premade-demo-container");
+        this.file_container = document.getElementById("file-demo-container");
         const cell_info_contents = document.getElementById("cell-info-contents");
         
-        container.addEventListener("click", e => {
-            if (e.target.tagName === "BUTTON") {
+        document.addEventListener("click", e => {
+            if (e.target.classList.contains("reshuffle-button")) {
                 this.reshuffle_demo(e.target.closest(".shuffle-demo"));
             }
         });
         
-        container.addEventListener("mouseover", e => {
+        document.addEventListener("mouseover", e => {
             this.hide_header_info();
             
             if (e.target.classList.contains("shuffle-cell")) {
@@ -26,6 +29,44 @@ const shuffle_demos = {
                 cell_info_contents.textContent = "";
             }
         });
+        
+        document.getElementById("hide-demos-btn").addEventListener("click", e => {
+            if (e.target.textContent === "Hide Demos") {
+                e.target.textContent = "Show Demos";
+                
+                document.querySelectorAll(".premade-demo").forEach(demo => {
+                    demo.classList.add("hidden");
+                });
+            } else {
+                e.target.textContent = "Hide Demos";
+                
+                document.querySelectorAll(".premade-demo").forEach(demo => {
+                    demo.classList.remove("hidden");
+                });
+            }
+        });
+        
+        document.getElementById("file-select").addEventListener("input", async e => {
+            const file = e.target.value;
+            
+            document.querySelectorAll(".file-demo").forEach(
+                demo => demo.classList.add("hidden")
+            );
+            
+            if (file in this.files) {
+                const demos = document.querySelectorAll(".shuffle-demo");
+                demos[this.files[file]].classList.remove("hidden");
+            } else {
+                e.target.disabled = true;
+                let csv = await CSV.fetch(file);
+                e.target.disabled = false;
+                
+                const csv_index = this.create_shuffle_demo(csv);
+                this.files[file] = csv_index;
+            }
+        });
+        
+        document.getElementById("file-select").querySelector("option").selected = true;
     },
     
     display_header_info: function(header) {
@@ -61,14 +102,7 @@ const shuffle_demos = {
     },
     
     add: function(csv_lines, added_html = "") {
-        const csv = this.make_csv(csv_lines);
-        const csv_index = this.csvs.length;
-        const unshuffled_csv = this.get_csv_clone_with_contents_wrapped(csv, csv_index);
-        this.csvs.push(unshuffled_csv);
-        const shuffled_csv = this.clone_csv(unshuffled_csv);
-        CSV.shuffle(shuffled_csv);
-        this.add_demo_html(csv_index, unshuffled_csv, shuffled_csv, added_html);
-        
+        this.create_shuffle_demo(this.make_csv(csv_lines), added_html, true);
     },
     
     make_csv: function(csv_lines) {
@@ -86,6 +120,16 @@ const shuffle_demos = {
         }
         
         return csv;
+    },
+    
+    create_shuffle_demo: function(csv, added_html = "", is_premade = false) {
+        const csv_index = this.csvs.length;
+        const unshuffled_csv = this.get_csv_clone_with_contents_wrapped(csv, csv_index);
+        this.csvs.push(unshuffled_csv);
+        const shuffled_csv = this.clone_csv(unshuffled_csv);
+        CSV.shuffle(shuffled_csv);
+        this.add_demo_html(csv_index, unshuffled_csv, shuffled_csv, added_html, is_premade);
+        return csv_index;
     },
     
     get_csv_clone_with_contents_wrapped: function(csv, csv_id) {
@@ -117,11 +161,12 @@ const shuffle_demos = {
         return clone;
     },
     
-    add_demo_html: function(csv_id, unshuffled_csv, shuffled_csv, added_html) {
-        const container = document.getElementById("shuffle-demo-container");
+    add_demo_html: function(csv_id, unshuffled_csv, shuffled_csv, added_html, is_premade) {
+        const container = is_premade ? this.premade_container : this.file_container;
+        const demo_class = "shuffle-demo" + (is_premade ? " premade-demo" : " file-demo");
     
         container.insertAdjacentHTML("beforeend", 
-            "<div class='shuffle-demo' data-csv='" + csv_id + "'>"
+            "<div class='" + demo_class + "' data-csv='" + csv_id + "'>"
                 + "<div class='shuffle-description'>" + added_html + "</div>"
                 + "<div class='csv-pair-container'><div><div>"
                 + this.get_csv_html(unshuffled_csv, csv_id)
@@ -134,14 +179,16 @@ const shuffle_demos = {
     },
     
     get_csv_html: function(csv, csv_id) {
+        const headers = Object.keys(csv[0]);
+        
         let html = "<table> <thead> <tr>"
-            + Object.keys(csv[0]).map((header, i) => 
+            + headers.map((header, i) => 
                 `<th><span class="shuffle-cell c-${csv_id}-${i}-h shuffle-header">${header}</span></th>`
             ).join("")
             + "</tr> </thead> <tbody>";
         
         for (let i = 0; i < csv.length; ++i) {
-            html += "<tr> <td>" + Object.values(csv[i]).map(cell => cell.get_wrapped_value()).join("</td> <td>") + "</td> </tr>";
+            html += "<tr> <td>" + headers.map(header => csv[i][header].get_wrapped_value()).join("</td> <td>") + "</td> </tr>";
         }
         
         html += "</tbody> </table>";
@@ -209,7 +256,7 @@ const cell_colors = {
                 this.clear_selected_cell_classes();
                 this.selecting = 1;
             } else if (e.target !== this.input
-                && e.target.tagName !== "BUTTON"
+                && !e.target.classList.contains("reshuffle-button")
                 && e.target.closest(".csv-pair-container > div > div") === null
             ) {
                 // they didnt click on either the shuffle button, the scrollbar, or the color picker

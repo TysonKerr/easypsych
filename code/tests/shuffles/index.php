@@ -1,4 +1,55 @@
-<!DOCTYPE html>
+<?php
+require dirname(dirname(dirname(__DIR__))) . '/code/php/init.php';
+
+function find_csvs($dir_from_root) {
+    $dir = APP_ROOT . "/$dir_from_root";
+    
+    if (!is_dir($dir)) return [];
+    
+    $csvs = [];
+    
+    foreach (scandir($dir) as $entry) {
+        if ($entry === '.' or $entry === '..') continue;
+        
+        $path = "$dir_from_root/$entry";
+        
+        if (is_dir("$dir/$entry")) {
+            $csvs = array_merge($csvs, find_csvs($path));
+        } else if (substr($entry, -4) === '.csv') {
+            $csvs[] = $path;
+        }
+    }
+    
+    return $csvs;
+}
+
+function get_file_option($file_path) {
+    return "<option value='$file_path'>" . basename($file_path) . '</option>';
+}
+
+function get_file_options_html() {
+    $files = [
+        'Stimuli'    => 'experiment/stimuli',
+        'Procedures' => 'experiment/procedures',
+        'Surveys'    => 'media/surveys',
+    ];
+
+    $file_options_html = '';
+
+    foreach ($files as $category => $dir) {
+        $csvs = find_csvs($dir);
+        
+        if (count($csvs) === 0) continue;
+        
+        $file_options_html .= "<optgroup label='$category'>"
+                           .  implode('', array_map('get_file_option', $csvs))
+                           .  '</optgroup>';
+    }
+
+    return $file_options_html;
+}
+
+?><!DOCTYPE html>
 <html>
 <head>
     <title>Shuffle Tests</title>
@@ -12,6 +63,10 @@
 </head>
 <body>
 
+<?php
+    $file_options_html = get_file_options_html();
+?>
+
 <div id="cell-info-display">
     <div id="cell-info-contents"></div>
     <div id="header-info">
@@ -22,9 +77,22 @@
 </div>
 <div id="cell-overlay"></div>
 
-<div id="shuffle-demo-container"></div>
+<div id="premade-demo-container"></div>
 
 <input type="color" id="cell-color-input">
+<button type="button" id="hide-demos-btn">Hide Demos</button>
+
+<div id="shuffle-file-container">
+    <div id="file-select-container">
+        File:
+        <select id="file-select">
+            <option hidden>Select a file</option>
+            <?= $file_options_html ?>
+        </select>
+    </div>
+    
+    <div id="file-demo-container"></div>
+</div>
 
 <script src="code/tests/shuffles/shuffle-test.js"></script>
 <script>

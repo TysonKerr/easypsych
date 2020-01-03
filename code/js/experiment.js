@@ -141,23 +141,7 @@ Experiment.prototype = {
     },
     
     fetch_csv: function(filename) {
-        return fetch("code/php/ajax-fetch-csv.php?f=" + encodeURIComponent(filename))
-            .then(resp => resp.text()).then(text => {
-                let json_data;
-                
-                try {
-                    json_data = JSON.parse(text);
-                } catch(error) {
-                    console.error(
-                        error
-                        + "\ncannot parse JSON data when fetching csv, received following from server:\n"
-                        + text
-                    );
-                }
-                
-                return json_data;
-            })
-            .then(csv_data => CSV.build(csv_data, filename));
+        return CSV.fetch(filename);
     },
     
     add_event_listeners: function() {

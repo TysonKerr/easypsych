@@ -1,25 +1,92 @@
 body {
     background-color: #adc9e6;
+    padding-top: 7em;
 }
 
-#cell-overlay {
+.shuffle-demo {
+    text-align: center;
+    margin-bottom: 3em;
+}
+.shuffle-demo.hidden {
     display: none;
-    position: absolute;
-    font-family: monospace;
-    padding: 1px 4px;
-    border: 1px solid black;
-    pointer-events: none;
-    user-select: none;
-    font-weight: bold;
-    box-sizing: border-box;
-    padding: 1px 4px;
-}
-#cell-overlay.shown {
-    display: block;
 }
 
-#cell-overlay:empty:after {
+.csv-pair-container > div {
+    width: calc(50% - 10px);
+    display: inline-block;
+    box-sizing: border-box;
+}
+.csv-pair-container > div:first-child {
+    text-align: right;
+    margin-right: 10px;
+}
+.csv-pair-container > div:last-child {
+    text-align: left;
+    margin-left: 10px;
+}
+
+.csv-pair-container > div > div {
+    display: inline-block;
+    border: 1px solid black;
+    overflow: auto;
+    max-width: 100%;
+}
+.csv-pair-container > div:first-child > div {
+    margin-left: auto;
+}
+
+table {
+    text-align: left;
+    border-collapse: collapse;
+    font-family: monospace;
+    overflow: auto;
+    user-select: none;
+    background-color: white;
+}
+
+td, th {
+    border: 1px solid black;
+    padding: 0;
+}
+th:first-child,
+td:first-child { border-left: none; }
+td:last-child,
+th:last-child { border-right: none; }
+th { border-top: none; }
+tbody tr:last-child td { border-bottom: none; }
+
+td > span,
+th > span {
+    display: block;
+    padding: 1px 4px;
+    white-space: nowrap;
+    max-width: 150px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+td > span:empty:after,
+th > span:empty:after {
     content: "\a0";
+}
+
+.reshuffle-button-container {
+    margin-top: 12px;
+    text-align: center;
+}
+
+.shuffle-description {
+    display: inline-block;
+    max-width: 800px;
+    margin: auto;
+    padding: 4px 8px;
+    background-color: #DDD;
+    margin: 20px auto;
+    border: 1px solid #5f7286;
+    text-align: left;
+    line-height: 1.5em;
+}
+.shuffle-description:empty {
+    display: none;
 }
 
 #cell-info-display {
@@ -39,7 +106,6 @@ body {
     font-size: 140%;
     font-family: monospace;
 }
-
 #cell-info-contents:empty:after {
     content: "\a0";
 }
@@ -47,9 +113,8 @@ body {
 #header-info {
     padding-left: 10px;
 }
-
 #header-info:not(.shown) {
-    visibility: hidden;
+    display: none;
 }
 
 #shuffle-type:before {
@@ -59,83 +124,49 @@ body {
 #shuffle-targets:not(:empty):before {
     content: "Affects columns: ";
 }
-
-#shuffle-within:not(:empty):before {
-    content: "Shuffles within column: ";
-}
-
 #shuffle-targets:empty:before {
     content: "\a0";
 }
 
+#shuffle-within:not(:empty):before {
+    content: "Shuffles within column: ";
+}
 #shuffle-within:empty:before {
     content: "\a0";
 }
 
-#shuffle-demo-container {
-    margin-top: 7em;
-}
-
-.shuffle-demo {
-    text-align: center;
-    margin-top: 3em;
-}
-.csv-pair-container > div {
-    width: calc(50% - 10px);
-    display: inline-block;
-    box-sizing: border-box;
-}
-.csv-pair-container > div:first-child {
-    text-align: right;
-    margin-right: 10px;
-}
-.csv-pair-container > div:last-child {
-    text-align: left;
-    margin-left: 10px;
-}
-.csv-pair-container > div > div {
-    display: inline-block;
-    border: 1px solid black;
-    overflow: auto;
-    max-width: 100%;
-}
-
-.csv-pair-container > div:first-child > div { margin-left: auto; }
-
-table {
-    text-align: left;
-    border-collapse: collapse;
+.column-name {
     font-family: monospace;
-    overflow: auto;
-    user-select: none;
-    background-color: white;
-}
-td, th {
-    border: 1px solid black;
-    padding: 0;
+    background-color: #ddd;
+    padding: 1px 2px;
+    display: inline-block;
 }
 
-td > span,
-th > span {
-    display: block;
+#hide-demos-btn {
+    position: fixed;
+    top: 0.5em;
+    right: 0.5em;
+    z-index: 2;
+}
+
+#cell-overlay {
+    display: none;
+    position: absolute;
+    font-family: monospace;
     padding: 1px 4px;
-    white-space: nowrap;
-    max-width: 150px;
-    text-overflow: ellipsis;
-    overflow: hidden;
+    border: 1px solid black;
+    pointer-events: none;
+    user-select: none;
+    font-weight: bold;
+    box-sizing: border-box;
+    padding: 1px 4px;
 }
-
-td > span:empty:after,
-th > span:empty:after {
+#cell-overlay.shown {
+    display: block;
+}
+#cell-overlay:empty:after {
     content: "\a0";
 }
-
-th:first-child,
-td:first-child { border-left: none; }
-td:last-child,
-th:last-child { border-right: none; }
-th { border-top: none; }
-tbody tr:last-child td { border-bottom: none; }
 
 #cell-color-input {
     display: none;
@@ -149,12 +180,11 @@ tbody tr:last-child td { border-bottom: none; }
     display: initial;
 }
 
-.reshuffle-button-container {
-    margin-top: 12px;
+#shuffle-file-container {
     text-align: center;
 }
 
-.shuffle-description {
+#file-select-container {
     display: inline-block;
     max-width: 800px;
     margin: auto;
@@ -162,17 +192,5 @@ tbody tr:last-child td { border-bottom: none; }
     background-color: #DDD;
     margin: 20px auto;
     border: 1px solid #5f7286;
-    text-align: left;
     line-height: 1.5em;
-}
-
-.shuffle-description:empty {
-    display: none;
-}
-
-.column-name {
-    font-family: monospace;
-    background-color: #ddd;
-    padding: 1px 2px;
-    display: inline-block;
 }
