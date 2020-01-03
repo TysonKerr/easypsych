@@ -42,8 +42,12 @@ const shuffle_demos = {
         } else {
             const headers = this.get_headers(header);
             type.textContent = shuffle_settings.type;
-            targets.textContent = CSV.get_target_columns(headers, shuffle_settings.targets).join(", ");
-            within.textContent = shuffle_settings.within === null ? "not constrained" : shuffle_settings.within;
+            targets.innerHTML = CSV.get_target_columns(headers, shuffle_settings.targets)
+                                .map(target => "<span class='column-name'>" + target + "</span>")
+                                .join(", ");
+            within.innerHTML = shuffle_settings.within === null
+                               ? "not constrained"
+                               : "<span class='column-name'>" + shuffle_settings.within + "</span>";
         }
     },
     

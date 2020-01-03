@@ -31,6 +31,7 @@ body {
     right: 0;
     padding: 0.5em;
     z-index: 1;
+    min-height: 5em;
 }
 
 #cell-info-contents {
@@ -167,4 +168,11 @@ tbody tr:last-child td { border-bottom: none; }
 
 .shuffle-description:empty {
     display: none;
+}
+
+.column-name {
+    font-family: monospace;
+    background-color: #ddd;
+    padding: 1px 2px;
+    display: inline-block;
 }

@@ -34,21 +34,21 @@ shuffle_demos.init();
 cell_colors.init();
 
 shuffle_demos.add([
-    ["Cue",       "Answer",    "Shuffle"],
-    ["2",         "---",       ""],
-    ["3",         "---",       "off"],
-    ["1.1-",      "Apple",     "set a"],
-    ["1.2--",     "Banana",    "set a"],
-    ["1.3---",    "Cucumber",  "set a"],
-    ["2.1-",      "Ant",       "group b"],
-    ["2.2--",     "Bat",       "group b"],
-    ["2.3---",    "Cat",       "group b"],
-    ["1.4----",   "Donut",     "set a"],
-    ["1.5-----",  "Enchilada", "set a"],
-    ["1.6------", "Flapjack",  "set a"],
-    ["2.4----",   "Dog",       "group b"],
-    ["2.5-----",  "Elephant",  "group b"],
-    ["2.6------", "Ferret",    "group b"],
+    ["Cue",        "Answer",    "Shuffle"],
+    ["2",          "---",       ""],
+    ["3",          "---",       "off"],
+    ["1.1 x",      "Apple",     "set a"],
+    ["1.2 xx",     "Banana",    "set a"],
+    ["1.3 xxx",    "Cucumber",  "set a"],
+    ["2.1 -",      "Ant",       "group b"],
+    ["2.2 --",     "Bat",       "group b"],
+    ["2.3 ---",    "Cat",       "group b"],
+    ["1.4 xxxx",   "Donut",     "set a"],
+    ["1.5 xxxxx",  "Enchilada", "set a"],
+    ["1.6 xxxxxx", "Flapjack",  "set a"],
+    ["2.4 ----",   "Dog",       "group b"],
+    ["2.5 -----",  "Elephant",  "group b"],
+    ["2.6 ------", "Ferret",    "group b"],
 ], "Shuffles are specified by any column starting with 'Shuffle'. By default, the type of shuffle will be a simple"
  + " row shuffle. Rows with matching values in the 'Shuffle' column will be swapped around. Rows are moved as a set,"
  + " so the cells within a row will stay together after the shuffle. If the value in the shuffle column is 'off', 'no',"
