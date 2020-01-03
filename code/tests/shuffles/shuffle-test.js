@@ -5,7 +5,7 @@ const shuffle_demos = {
     
     init: function() {
         const container = document.getElementById("shuffle-demo-container");
-        const cell_info_display = document.getElementById("cell-info-display");
+        const cell_info_contents = document.getElementById("cell-info-contents");
         
         container.addEventListener("click", e => {
             if (e.target.tagName === "BUTTON") {
@@ -14,12 +14,46 @@ const shuffle_demos = {
         });
         
         container.addEventListener("mouseover", e => {
+            this.hide_header_info();
+            
             if (e.target.classList.contains("shuffle-cell")) {
-                cell_info_display.textContent = e.target.textContent;
+                cell_info_contents.textContent = e.target.textContent;
+                
+                if (e.target.classList.contains("shuffle-header")) {
+                    this.display_header_info(e.target);
+                }
             } else if (e.target.closest("table") === null) {
-                cell_info_display.textContent = "";
+                cell_info_contents.textContent = "";
             }
         });
+    },
+    
+    display_header_info: function(header) {
+        document.getElementById("header-info").classList.add("shown");
+        const type = document.getElementById("shuffle-type");
+        const targets = document.getElementById("shuffle-targets");
+        const within = document.getElementById("shuffle-within");
+        const shuffle_settings = CSV.get_shuffle_settings(header.textContent);
+        
+        if (shuffle_settings === false) {
+            type.textContent = "not a shuffle column";
+            targets.textContent = "";
+            within.textContent = "";
+        } else {
+            const headers = this.get_headers(header);
+            type.textContent = shuffle_settings.type;
+            targets.textContent = CSV.get_target_columns(headers, shuffle_settings.targets).join(", ");
+            within.textContent = shuffle_settings.within === null ? "whole file" : shuffle_settings.within;
+        }
+    },
+    
+    hide_header_info: function() {
+        document.getElementById("header-info").classList.remove("shown");
+    },
+    
+    get_headers: function(header) {
+        return Array.from(header.closest("tr").querySelectorAll("th"))
+            .map(th => th.textContent);
     },
     
     add: function(csv_lines) {
@@ -89,7 +123,7 @@ const shuffle_demos = {
                 + "</div></div><div><div>"
                 + this.get_csv_html(shuffled_csv, csv_id)
                 + "</div></div></div>"
-                + "<div class='reshuffle-button-container'><button class='reshuffle-button'>Reshuffle</button></div>"
+                + "<div class='reshuffle-button-container'><button class='reshuffle-button' type='button'>Reshuffle</button></div>"
             + "</div>"
         );
     },
@@ -97,7 +131,7 @@ const shuffle_demos = {
     get_csv_html: function(csv, csv_id) {
         let html = "<table> <thead> <tr>"
             + Object.keys(csv[0]).map((header, i) => 
-                `<th><span class="shuffle-cell c-${csv_id}-${i}-h">${header}</span></th>`
+                `<th><span class="shuffle-cell c-${csv_id}-${i}-h shuffle-header">${header}</span></th>`
             ).join("")
             + "</tr> </thead> <tbody>";
         

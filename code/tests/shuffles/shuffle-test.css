@@ -29,18 +29,50 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    text-align: center;
     padding: 0.5em;
-    font-family: monospace;
-    font-size: 140%;
+    z-index: 1;
 }
 
-#cell-info-display:empty:after {
+#cell-info-contents {
+    text-align: center;
+    font-size: 140%;
+    font-family: monospace;
+}
+
+#cell-info-contents:empty:after {
+    content: "\a0";
+}
+
+#header-info {
+    padding-left: 10px;
+}
+
+#header-info:not(.shown) {
+    visibility: hidden;
+}
+
+#shuffle-type:before {
+    content: "Shuffle type: ";
+}
+
+#shuffle-targets:not(:empty):before {
+    content: "Affects columns: ";
+}
+
+#shuffle-within:not(:empty):before {
+    content: "Shuffles within column: ";
+}
+
+#shuffle-targets:empty:before {
+    content: "\a0";
+}
+
+#shuffle-within:empty:before {
     content: "\a0";
 }
 
 #shuffle-demo-container {
-    
+    margin-top: 7em;
 }
 
 .shuffle-demo {
@@ -107,6 +139,7 @@ tbody tr:last-child td { border-bottom: none; }
     position: fixed;
     top: 0.5em;
     left: 0.5em;
+    z-index: 2;
 }
 
 #cell-color-input.shown {

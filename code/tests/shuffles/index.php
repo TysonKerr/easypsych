@@ -12,7 +12,14 @@
 </head>
 <body>
 
-<div id="cell-info-display"></div>
+<div id="cell-info-display">
+    <div id="cell-info-contents"></div>
+    <div id="header-info">
+        <div id="shuffle-type"></div>
+        <div id="shuffle-targets"></div>
+        <div id="shuffle-within"></div>
+    </div>
+</div>
 <div id="cell-overlay"></div>
 
 <div id="shuffle-demo-container"></div>
