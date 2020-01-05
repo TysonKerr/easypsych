@@ -1,8 +1,8 @@
 <?php
     require __DIR__ . '/code/php/init.php';
     require APP_ROOT . '/code/php/experiment-definitions.php';
-    start_session();
-    $exp_resources = get_experiment_resources($_SESSION['username'], $_SESSION['id']);
+	
+    $exp_resources = get_experiment_resources();
     $css_link = get_smart_cached_link('code/css/style.css');
     $exp_js_link = get_smart_cached_link('code/js/experiment.js');
     $helper_js_link = get_smart_cached_link('code/js/helper.js');

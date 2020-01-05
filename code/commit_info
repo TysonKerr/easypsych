@@ -1,6 +1,10 @@
-45 dev 31
+77 remove-session 0
 
 Previous Commit info:
-2020-01-03 06:28:20 -0800
-933a9e2d43616a9da52a5968281702d897f1df39
-added check to survey trial type that names are unique
+2020-01-03 06:35:41 -0800
+7ef03480047a419198a46e9f7dd7125fba4fa47a
+made survey trial type wait for survey to load
+
+shows loading gif before load is complete
+hides submit button
+refocuses on first focusable element after load

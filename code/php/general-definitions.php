@@ -17,16 +17,6 @@ function get_all_settings() {
     return $settings;
 }
 
-function start_session() {
-    $session_dir = APP_ROOT . '/data/sess';
-    
-    if (!is_dir($session_dir)) mkdir($session_dir, 0755, true);
-    
-    session_save_path($session_dir);
-    
-    session_start();
-}
-
 function get_experiment_title() {
     return htmlspecialchars(get_setting('experiment_name'));
 }
@@ -41,27 +31,16 @@ function get_conditions() {
     return $conditions;
 }
 
-function get_new_id() {
-    return get_random_string(8);
-}
-
-function get_random_string($len = 8) {
-    $chars = 'qwertyuiopasdfghjklzxcvbnm1234567890';
-    $str = '';
-    
-    for ($i = 0; $i < $len; ++$i) {
-        $str .= $chars[rand(0, 35)];
-    }
-    
-    return $str;
+function get_user_metadata_file($username) {
+	return APP_ROOT . "/data/user-$username-data/metadata.csv";
 }
 
 function record_metadata($username, $id, $metadata) {
-    $dir = APP_ROOT . "/data/user-$username-data";
+    $filename = get_user_metadata_file($username);
+    $dir = dirname($filename);
     
     if (!is_dir($dir)) mkdir($dir, 0755, true);
     
-    $filename = "$dir/metadata.csv";
     $handle = fopen($filename, 'a');
     
     foreach ($metadata as $key => $val) {
@@ -72,7 +51,7 @@ function record_metadata($username, $id, $metadata) {
 }
 
 function get_metadata($username, $id = false) {
-    $filename = APP_ROOT . "/data/user-$username-data/metadata.csv";
+    $filename = get_user_metadata_file($username);
     
     if (!is_file($filename)) return [];
     
@@ -104,10 +83,6 @@ function get_metadata_for_id($metadata, $id) {
     }
     
     return $id_data;
-}
-
-function user_data_exists($username) {
-    return is_file(APP_ROOT . "/data/user-$username-data/metadata.csv");
 }
 
 function get_smart_cached_link($link) {
