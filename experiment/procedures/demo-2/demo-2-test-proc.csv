@@ -1,0 +1,8 @@
+Trial Type,Text
+show-text,"This is a proc file for the ""demo-experiment-2"" experiment, which by default is not seen at the login screen."
+show-text,"To see this file used, you can switch the current experiment in the server-settings.ini.php file, found in the experiment/ folder of this program. Or, you can override the current experiment at the login screen, by adding ""?e=demo-experiment-2"" to the URL."
+show-text,"Using condition files this way, when you finish one version of an experiment, and want to run another, you don't have to delete or replace your old conditions file. You can simply make another file, give it a new name, and switch the current experiment to that new file."
+show-text,"These can also be used to set up testing or demo procedures. If you want to create a version of an experiment to show other researchers, you can make them in their own conditions file, and then use a link with the appended parameter in the URL."
+show-text,"Each experiment created with a conditions file will also get its data placed into a subfolder of its own name, so its easy to track which data belongs together, which data was just testing data. etc."
+show-text,"These conditions can also be placed in their own subfolders, so you could have exp1/pilot.csv, exp1/v1.csv, exp2/pilot.csv, and so on."
+show-text,"It is possible to share procedure and stimuli files between conditions, so you don't have to remake files that stay the same between experiments."

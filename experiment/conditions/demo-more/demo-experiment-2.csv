@@ -1,0 +1,4 @@
+Procedure,Stimuli,Name
+demo-2/demo-2-test-proc.csv,,explaining conditions files
+demo-trial-types-proc.csv,demo-stim.csv,trial types
+demo-multi-session-proc.csv,,multi-session

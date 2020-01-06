@@ -38,18 +38,20 @@ function get_conditions_filename($exp) {
 }
 
 function get_current_experiment() {
-    if (filter_has_var(INPUT_GET, 'e')) {
-        $input = INPUT_GET;
-    } elseif (filter_has_var(INPUT_POST, 'e')) {
+    if (filter_has_var(INPUT_POST, 'e')) {
         $input = INPUT_POST;
+    } elseif (filter_has_var(INPUT_GET, 'e')) {
+        $input = INPUT_GET;
     }
     
     $exp = isset($input)
          ? get_filtered_experiment_name(filter_input($input, 'e'))
          : get_setting('current_experiment');
     
-    if (!is_file(get_conditions_filename($exp))) {
-        throw new Exception('invalid experiment requested');
+    if (substr($exp, 0, 5) === 'user-'
+        or !is_file(get_conditions_filename($exp))
+    ) {
+        throw new Exception("invalid experiment requested: $exp");
     }
     
     return $exp;
