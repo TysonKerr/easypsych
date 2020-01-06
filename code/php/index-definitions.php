@@ -100,3 +100,12 @@ function get_error_message() {
          ? get_message_for_error_code(filter_input(INPUT_GET, 'm'))
          : '';
 }
+
+function get_exp_input() {
+    $exp = get_current_experiment();
+    
+    if ($exp === get_setting('current_experiment')) return '';
+    
+    $exp_name = htmlspecialchars($exp, ENT_QUOTES);
+    return "<input type='hidden' style='display: none' name='e' value='$exp_name'>";
+}

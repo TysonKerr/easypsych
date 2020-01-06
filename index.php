@@ -7,6 +7,7 @@
     $css_link = get_smart_cached_link('code/css/style.css');
     $login_script_link = get_smart_cached_link('code/js/login.js');
     $login_error = get_error_message();
+    $exp_input = get_exp_input();
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -24,6 +25,7 @@
             <?= $condition_choice ?>
             <tr> <td></td> <td><button type="submit">Submit</button></td> </tr>
         </table>
+        <?= $exp_input ?>
     </form>
 </div></div>
 <script src="<?= $login_script_link ?>"></script>

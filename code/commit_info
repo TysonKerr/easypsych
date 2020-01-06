@@ -1,6 +1,8 @@
-77 multi-exp 2
+77 multi-exp 3
 
 Previous Commit info:
-2020-01-05 21:08:04 -0800
-f88c7b30f411e9883c4ab1d2e1b3e826c03cc661
-made ajaxing responses work without SESSION
+2020-01-06 05:58:07 -0800
+a4477debdfb1f10f6df96547271fbc199ccd9930
+fixed bug with selected conditions not working
+
+also improved error messages when login failed

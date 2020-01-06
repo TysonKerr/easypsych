@@ -18,25 +18,51 @@ function get_all_settings() {
 }
 
 function get_experiment_title() {
-    return htmlspecialchars(get_setting('experiment_name'));
+    return htmlspecialchars(get_setting('page_title'));
 }
 
-function get_conditions() {
-    static $conditions = null;
+function get_conditions($exp = null) {
+    static $conditions = [];
     
-    if ($conditions === null) {
-        $conditions = read_csv(APP_ROOT . '/experiment/conditions.csv');
+    if ($exp === null) $exp = get_current_experiment();
+    
+    if (!isset($conditions[$exp])) {
+        $conditions[$exp] = read_csv(get_conditions_filename($exp));
     }
     
-    return $conditions;
+    return $conditions[$exp];
 }
 
-function get_user_metadata_filename($username) {
-    return APP_ROOT . "/data/user-$username-data/metadata.csv";
+function get_conditions_filename($exp) {
+    return APP_ROOT . "/experiment/conditions/$exp.csv";
 }
 
-function get_user_responses_filename($username, $id) {
-    return APP_ROOT . "/data/user-$username-data/$id-responses.csv";
+function get_current_experiment() {
+    if (filter_has_var(INPUT_GET, 'e')) {
+        $input = INPUT_GET;
+    } elseif (filter_has_var(INPUT_POST, 'e')) {
+        $input = INPUT_POST;
+    }
+    
+    $exp = isset($input)
+         ? get_filtered_experiment_name(filter_input($input, 'e'))
+         : get_setting('current_experiment');
+    
+    if (!is_file(get_conditions_filename($exp))) {
+        throw new Exception('invalid experiment requested');
+    }
+    
+    return $exp;
+}
+
+function get_user_metadata_filename($username, $exp = null) {
+    $exp = $exp ?: get_current_experiment();
+    return APP_ROOT . "/data/$exp/user-$username-data/metadata.csv";
+}
+
+function get_user_responses_filename($username, $id, $exp = null) {
+    $exp = $exp ?: get_current_experiment();
+    return APP_ROOT . "/data/$exp/user-$username-data/$id-responses.csv";
 }
 
 function record_metadata($username, $id, $metadata) {
@@ -96,8 +122,7 @@ function get_submitted_username() {
 }
 
 function get_filtered_username($username_raw) {
-    $username = filter_var($username_raw, FILTER_DEFAULT, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-    $username = str_replace(str_split('<>:"/\\|?*' . chr(127)), '', $username);
+    $username = get_str_without_bad_dir_characters($username_raw);
     $username = strtolower(trim($username));
     return $username;
 }
@@ -110,6 +135,16 @@ function get_submitted_id() {
 
 function get_filtered_id($id_raw) {
     return preg_replace('/[^a-z0-9]/', '', $id_raw);
+}
+
+function get_filtered_experiment_name($exp_raw) {
+    return str_replace('..', '', $exp_raw);
+}
+
+function get_str_without_bad_dir_characters($str) {
+    $str = filter_var($str, FILTER_DEFAULT, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+    $str = str_replace(str_split('<>:"/\\|?*' . chr(127)), '', $str);
+    return $str;
 }
 
 function get_login_error($login) {
@@ -167,6 +202,10 @@ function validate_csv_filename($filename) {
 function fopen_errorful($filename, $mode) {
     if (!is_file($filename) and $mode[0] === 'r') {
         throw new Exception("Cannot read file, does not exist: $filename");
+    }
+    
+    if (is_file($filename) and $mode[0] === 'w') {
+        throw new Exception("Cannot write file, already exists: $filename");
     }
     
     $handle = @fopen($filename, $mode);

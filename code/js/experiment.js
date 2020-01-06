@@ -448,11 +448,12 @@ Experiment.prototype.data_submission = {
         });
     },
     
-    queue_response_submission: function(response_set, next_proc_index, {name, id}) {
+    queue_response_submission: function(response_set, next_proc_index, {name, id, exp}) {
         response_set.forEach(row => {
             row["Exp_Next_Proc_Index"] = next_proc_index;
             row["Exp_Username"] = name;
             row["Exp_ID"] = id;
+            row["Exp_Name"] = exp;
             Object.freeze(row);
         });
         
@@ -460,11 +461,11 @@ Experiment.prototype.data_submission = {
         this.response_submission_queue.push(response_set);
         
         if (this.is_ready_to_submit_responses) {
-            this.submit_responses(name, id);
+            this.submit_responses(name, id, exp);
         }
     },
     
-    submit_responses: function(name, id) {
+    submit_responses: function(name, id, exp) {
         this.is_ready_to_submit_responses = false;
         
         let responses = [];
@@ -497,6 +498,7 @@ Experiment.prototype.data_submission = {
         
         let query_string = "u=" + encodeURIComponent(name)
             + "&i=" + encodeURIComponent(id)
+            + "&e=" + encodeURIComponent(exp)
             + "&responses=" + encodeURIComponent(JSON.stringify(
             responses.reduce((rows, row_set) => rows.concat(row_set), [])
         ));

@@ -104,7 +104,11 @@ function get_user_experiment_resources($username, $id) {
         'exp_data' => get_exp_data($username, $id),
         'trial_types' => get_trial_types(),
         'settings' => get_client_settings(),
-        'user' => ['name' => $username, 'id' => $id]
+        'user' => [
+            'name' => $username,
+            'id' => $id,
+            'exp' => get_current_experiment()
+        ]
     ]);
 }
 
