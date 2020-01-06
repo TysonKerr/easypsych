@@ -60,7 +60,7 @@ function get_responses($username, $id_list) {
     $responses = [];
     
     foreach ($id_list as $id) {
-        $filename = APP_ROOT . "/data/user-$username-data/$id-responses.csv";
+        $filename = get_user_responses_filename($username, $id);
         
         if (is_file($filename)) {
             $responses = array_merge(read_csv($filename), $responses);
@@ -151,12 +151,12 @@ function validate_login($login) {
 }
 
 function goto_login($error_code = false) {
-    header('Location: index.php' . ($error_code === false ? "?m=$error_code" : ''));
+    header('Location: index.php' . ($error_code !== false ? "?m=$error_code" : ''));
     exit;
 }
 
 function user_data_exists($username) {
-    return is_file(get_user_metadata_file($username));
+    return is_file(get_user_metadata_filename($username));
 }
 
 function login_new_user($username, $id, $condition_index = null) {
@@ -166,10 +166,9 @@ function login_new_user($username, $id, $condition_index = null) {
 
 function get_and_validate_condition_index($submitted_index) {
     $conditions = get_conditions();
-    
-    if ($submitted_index === '-1' or $submitted_index === null) {
-        $condition_index = rand(0, count($conditions) - 1);
-    }
+    $condition_index = ($submitted_index === '-1' or $submitted_index === null)
+                     ? rand(0, count($conditions) - 1)
+                     : $submitted_index;
     
     if (!isset($conditions[$condition_index])) {
         goto_login(4);

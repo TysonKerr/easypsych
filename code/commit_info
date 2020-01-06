@@ -1,6 +1,6 @@
-77 remove-session 1
+77 multi-exp 2
 
 Previous Commit info:
-2020-01-05 11:39:32 -0800
-bc0f25dc60b20d2f2d83832f017c2da03e6a15bd
-removed use of $_SESSION in login process
+2020-01-05 21:08:04 -0800
+f88c7b30f411e9883c4ab1d2e1b3e826c03cc661
+made ajaxing responses work without SESSION

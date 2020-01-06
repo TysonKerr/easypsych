@@ -2,21 +2,9 @@
 
 require dirname(dirname(__DIR__)) . '/code/php/init-ajax.php';
 
-$username = get_submitted_username();
-$id       = get_submitted_id();
-
-$error = get_login_error([
-    'username' => $username,
-    'id'       => $id
-]);
-
-if ($error !== null) {
-    exit("error code: $error");
-}
-
-if (!filter_has_var(INPUT_POST, 'responses')) exit('missing responses');
+$user_info = validate_ajax_submission();
 
 append_to_csv(
-    APP_ROOT . "/data/user-$username-data/$id-responses.csv",
+    get_user_responses_filename($user_info['username'], $user_info['id']),
     json_decode(filter_input(INPUT_POST, 'responses'), true)
 );

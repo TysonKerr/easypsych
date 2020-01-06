@@ -31,12 +31,16 @@ function get_conditions() {
     return $conditions;
 }
 
-function get_user_metadata_file($username) {
+function get_user_metadata_filename($username) {
     return APP_ROOT . "/data/user-$username-data/metadata.csv";
 }
 
+function get_user_responses_filename($username, $id) {
+    return APP_ROOT . "/data/user-$username-data/$id-responses.csv";
+}
+
 function record_metadata($username, $id, $metadata) {
-    $filename = get_user_metadata_file($username);
+    $filename = get_user_metadata_filename($username);
     $dir = dirname($filename);
     
     if (!is_dir($dir)) mkdir($dir, 0755, true);
@@ -51,7 +55,7 @@ function record_metadata($username, $id, $metadata) {
 }
 
 function get_metadata($username, $id = false) {
-    $filename = get_user_metadata_file($username);
+    $filename = get_user_metadata_filename($username);
     
     if (!is_file($filename)) return [];
     
@@ -115,6 +119,33 @@ function get_login_error($login) {
     if (strlen($login['id']) !== 10)    return 3;
     
     return null;
+}
+
+function get_message_for_error_code($code) {
+    switch($code) {
+        case 0: return 'Missing username, please login below:';
+        case 1: return 'Invalid username, please login below:';
+        case 2: return 'Missing session id, please login below:';
+        case 3: return 'Invalid session id, please login below:';
+        case 4: return 'Selected condition index not available';
+    }
+}
+
+function validate_ajax_submission() {
+    $user_info = [
+        'username' => get_submitted_username(),
+        'id'       => get_submitted_id()
+    ];
+
+    $error = get_login_error($user_info);
+
+    if ($error !== null) {
+        exit("error code: $error");
+    }
+
+    if (!filter_has_var(INPUT_POST, 'responses')) exit('missing responses');
+    
+    return $user_info;
 }
 
 function get_smart_cached_link($link) {
