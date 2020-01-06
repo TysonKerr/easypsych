@@ -1,10 +1,6 @@
-77 remove-session 0
+77 remove-session 1
 
 Previous Commit info:
-2020-01-03 06:35:41 -0800
-7ef03480047a419198a46e9f7dd7125fba4fa47a
-made survey trial type wait for survey to load
-
-shows loading gif before load is complete
-hides submit button
-refocuses on first focusable element after load
+2020-01-05 11:39:32 -0800
+bc0f25dc60b20d2f2d83832f017c2da03e6a15bd
+removed use of $_SESSION in login process

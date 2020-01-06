@@ -5,6 +5,7 @@ var Experiment = function(container, resources) {
     this.data = loaded_resources.data;
     this.proc_index = loaded_resources.proc_index;
     this.trial_number = loaded_resources.trial_number;
+    this.user = loaded_resources.user;
     this.post_trial_level = 0;
     this.trial = null;
     
@@ -123,7 +124,12 @@ Experiment.prototype = {
     },
     
     change_trial: function(new_proc_index) {
-        this.data_submission.queue_response_submission(this.data.responses[this.trial_number], new_proc_index);
+        this.data_submission.queue_response_submission(
+            this.data.responses[this.trial_number],
+            new_proc_index,
+            this.user
+        );
+        
         this.post_trial_level = 0;
         this.proc_index = Math.min(Math.max(new_proc_index, 0), this.data.procedure.length);
         ++this.trial_number;
@@ -264,7 +270,8 @@ Experiment.prototype.loader = {
             trial_template: exp_resources.trial_template,
             trial_types: exp_resources.trial_types,
             data: this.load_exp_data(exp_resources.exp_data),
-            settings: exp_resources.settings
+            settings: exp_resources.settings,
+            user: exp_resources.user
         };
         
         this.set_loaded_trial_and_proc_index(loaded);
@@ -441,9 +448,11 @@ Experiment.prototype.data_submission = {
         });
     },
     
-    queue_response_submission: function(response_set, next_proc_index) {
+    queue_response_submission: function(response_set, next_proc_index, {name, id}) {
         response_set.forEach(row => {
             row["Exp_Next_Proc_Index"] = next_proc_index;
+            row["Exp_Username"] = name;
+            row["Exp_ID"] = id;
             Object.freeze(row);
         });
         
@@ -451,11 +460,11 @@ Experiment.prototype.data_submission = {
         this.response_submission_queue.push(response_set);
         
         if (this.is_ready_to_submit_responses) {
-            this.submit_responses();
+            this.submit_responses(name, id);
         }
     },
     
-    submit_responses: function() {
+    submit_responses: function(name, id) {
         this.is_ready_to_submit_responses = false;
         
         let responses = [];
@@ -477,7 +486,7 @@ Experiment.prototype.data_submission = {
                     
                     setTimeout(() => {
                         console.log("attempting to submit responses again");
-                        this.submit_responses();
+                        this.submit_responses(name, id);
                     }, wait_time * 1000);
                 } else {
                     this.error_counter = 0;
@@ -486,11 +495,15 @@ Experiment.prototype.data_submission = {
             }
         };
         
+        let query_string = "u=" + encodeURIComponent(name)
+            + "&i=" + encodeURIComponent(id)
+            + "&responses=" + encodeURIComponent(JSON.stringify(
+            responses.reduce((rows, row_set) => rows.concat(row_set), [])
+        ));
+        
         request.open("POST", "code/php/ajax-responses.php");
         request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        request.send('responses=' + encodeURIComponent(JSON.stringify(
-            responses.reduce((rows, row_set) => rows.concat(row_set), [])
-        )));
+        request.send(query_string);
     },
     
     clear_responses_from_queue: function(responses) {

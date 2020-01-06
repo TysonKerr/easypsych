@@ -32,7 +32,7 @@ function get_conditions() {
 }
 
 function get_user_metadata_file($username) {
-	return APP_ROOT . "/data/user-$username-data/metadata.csv";
+    return APP_ROOT . "/data/user-$username-data/metadata.csv";
 }
 
 function record_metadata($username, $id, $metadata) {
@@ -83,6 +83,38 @@ function get_metadata_for_id($metadata, $id) {
     }
     
     return $id_data;
+}
+
+function get_submitted_username() {
+    if (!filter_has_var(INPUT_POST, 'u')) return null;
+    
+    return get_filtered_username(filter_input(INPUT_POST, 'u'));
+}
+
+function get_filtered_username($username_raw) {
+    $username = filter_var($username_raw, FILTER_DEFAULT, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+    $username = str_replace(str_split('<>:"/\\|?*' . chr(127)), '', $username);
+    $username = strtolower(trim($username));
+    return $username;
+}
+
+function get_submitted_id() {
+    if (!filter_has_var(INPUT_POST, 'i')) return null;
+    
+    return get_filtered_id(filter_input(INPUT_POST, 'i'));
+}
+
+function get_filtered_id($id_raw) {
+    return preg_replace('/[^a-z0-9]/', '', $id_raw);
+}
+
+function get_login_error($login) {
+    if ($login['username'] === null)    return 0;
+    if (strlen($login['username']) < 1) return 1;
+    if ($login['id'] === null)          return 2;
+    if (strlen($login['id']) !== 10)    return 3;
+    
+    return null;
 }
 
 function get_smart_cached_link($link) {

@@ -5,8 +5,8 @@
     $experiment_title = get_experiment_title();
     $condition_choice = get_condition_choice_html();
     $css_link = get_smart_cached_link('code/css/style.css');
-	$login_script_link = get_smart_cached_link('code/js/login.js');
-	$login_error = get_error_message();
+    $login_script_link = get_smart_cached_link('code/js/login.js');
+    $login_error = get_error_message();
 ?><!DOCTYPE html>
 <html>
 <head>

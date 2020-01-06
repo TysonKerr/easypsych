@@ -96,5 +96,5 @@ function validate_exp_file($filename, $type) {
 }
 
 function get_error_message() {
-	return filter_has_var(INPUT_POST, 'm') ? filter_input(INPUT_POST, 'm') : '';
+    return filter_has_var(INPUT_POST, 'm') ? filter_input(INPUT_POST, 'm') : '';
 }

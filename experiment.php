@@ -1,7 +1,7 @@
 <?php
     require __DIR__ . '/code/php/init.php';
     require APP_ROOT . '/code/php/experiment-definitions.php';
-	
+    
     $exp_resources = get_experiment_resources();
     $css_link = get_smart_cached_link('code/css/style.css');
     $exp_js_link = get_smart_cached_link('code/js/experiment.js');
