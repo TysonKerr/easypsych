@@ -21,7 +21,7 @@ var helper = {
     range: function(start, end) {
         if (this.is_numeric(start) && this.is_numeric(end)) {
             return this.numeric_range(Number(start), Number(end));
-        } else if (start.length === 1 && end.length === 1) {
+        } else if (this.is_letter(start) && this.is_letter(end)) {
             return this.character_range(start, end);
         } else {
             return [start, end];
@@ -29,7 +29,11 @@ var helper = {
     },
     
     is_numeric: function(input) {
-        return !isNaN(Number(input));
+        return (input !== "") && !isNaN(Number(input));
+    },
+    
+    is_letter: function(input) {
+        return input.length === 1 && input.match(/[a-z]/i);
     },
     
     numeric_range: function(start, end) {

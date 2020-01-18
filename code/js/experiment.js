@@ -609,7 +609,7 @@ Experiment.prototype.validator = {
                     let stim_indices = helper.parse_range_str(trial["Stimuli"]);
                     
                     for (let j = 0; j < stim_indices.length; ++j) {
-                        if (stim_indices[j] === 0) continue;
+                        if (stim_indices[j] === 0 || stim_indices[j] === "") continue;
                         
                         let index = stim_indices[j] - 2;
                         
