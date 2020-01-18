@@ -1,7 +1,5 @@
 "use strict";
 var CSV = {
-    seeded_randoms: {},
-    
     build: function(src_files, filename, shuffle_seed) {
         let csv = [];
         let dir = filename.substring(0, filename.lastIndexOf("/"));
@@ -457,11 +455,7 @@ var CSV = {
                  ? String(Math.random())
                  : String(shuffle_seed);
         
-        if (!(seed in this.seeded_randoms)) {
-            this.seeded_randoms[seed] = new Math.seedrandom(seed);
-        }
-        
-        return this.seeded_randoms[seed];
+        return new Math.seedrandom(seed);
     },
     
     get_shuffle_settings: function(header) {

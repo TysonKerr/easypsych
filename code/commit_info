@@ -1,8 +1,9 @@
-77 multi-exp 4
+82 dev 0
 
 Previous Commit info:
-2020-01-06 09:11:05 -0800
-8c65233beb878752608a8d1d9eef04603a859a69
-enabled multiple experiments to co-exist
+2020-01-06 15:18:59 -0800
+1237d44a0ef45325bfb0fbfd011f29d8f47c5449
+added some demos for multiple experiments
 
-each experiment needs its own conditions file, now placed in a conditions folder
+updated the styling for show-text a bit
+prevented experiments from starting with "user-"
