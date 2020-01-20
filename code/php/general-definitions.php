@@ -21,10 +21,8 @@ function get_experiment_title() {
     return htmlspecialchars(get_setting('page_title'));
 }
 
-function get_conditions($exp = null) {
+function get_conditions($exp) {
     static $conditions = [];
-    
-    if ($exp === null) $exp = get_current_experiment();
     
     if (!isset($conditions[$exp])) {
         $conditions[$exp] = read_csv(get_conditions_filename($exp));
@@ -57,18 +55,16 @@ function get_current_experiment() {
     return $exp;
 }
 
-function get_user_metadata_filename($username, $exp = null) {
-    $exp = $exp ?: get_current_experiment();
+function get_user_metadata_filename($username, $exp) {
     return APP_ROOT . "/data/$exp/user-$username-data/metadata.csv";
 }
 
-function get_user_responses_filename($username, $id, $exp = null) {
-    $exp = $exp ?: get_current_experiment();
+function get_user_responses_filename($username, $exp, $id) {
     return APP_ROOT . "/data/$exp/user-$username-data/$id-responses.csv";
 }
 
-function record_metadata($username, $id, $metadata) {
-    $filename = get_user_metadata_filename($username);
+function record_metadata($username, $exp, $id, $metadata) {
+    $filename = get_user_metadata_filename($username, $exp);
     $dir = dirname($filename);
     
     if (!is_dir($dir)) mkdir($dir, 0755, true);
@@ -82,8 +78,8 @@ function record_metadata($username, $id, $metadata) {
     fclose($handle);
 }
 
-function get_metadata($username, $id = false) {
-    $filename = get_user_metadata_filename($username);
+function get_metadata($username, $exp, $id = false) {
+    $filename = get_user_metadata_filename($username, $exp);
     
     if (!is_file($filename)) return [];
     
@@ -171,7 +167,8 @@ function get_message_for_error_code($code) {
 function validate_ajax_submission() {
     $user_info = [
         'username' => get_submitted_username(),
-        'id'       => get_submitted_id()
+        'id'       => get_submitted_id(),
+        'exp'      => get_current_experiment()
     ];
 
     $error = get_login_error($user_info);

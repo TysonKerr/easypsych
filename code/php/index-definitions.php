@@ -1,16 +1,16 @@
 <?php
 
-function get_condition_choice_html() {
+function get_condition_choice_html($exp) {
     if (get_setting('allow_condition_selection')) {
-        return '<tr> <td>Condition:</td> <td>' . get_condition_select_html() . '</td> </tr>';
+        return '<tr> <td>Condition:</td> <td>' . get_condition_select_html($exp) . '</td> </tr>';
     } else {
         return '';
     }
 }
 
-function get_condition_select_html() {
+function get_condition_select_html($exp) {
     $html = '<select name="c"><option value="-1" selected>Random Assignment</option>';
-    $conditions = get_conditions();
+    $conditions = get_conditions($exp);
     $use_condition_names = get_setting('use_condition_names');
     
     foreach ($conditions as $i => $condition) {
@@ -27,8 +27,8 @@ function get_condition_select_html() {
     return $html;
 }
 
-function validate_experiment() {
-    $conditions = get_conditions();
+function validate_experiment($exp) {
+    $conditions = get_conditions($exp);
     validate_conditions($conditions);
     validate_files_in_conditions($conditions);
 }
@@ -101,11 +101,7 @@ function get_error_message() {
          : '';
 }
 
-function get_exp_input() {
-    $exp = get_current_experiment();
-    
-    if ($exp === get_setting('current_experiment')) return '';
-    
+function get_exp_input($exp) {
     $exp_name = htmlspecialchars($exp, ENT_QUOTES);
     return "<input type='hidden' style='display: none' name='e' value='$exp_name'>";
 }

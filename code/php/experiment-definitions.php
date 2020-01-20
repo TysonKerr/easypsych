@@ -56,11 +56,11 @@ function get_random_string($len = 8) {
     return $str;
 }
 
-function get_responses($username, $id_list) {
+function get_responses($username, $exp, $id_list) {
     $responses = [];
     
     foreach ($id_list as $id) {
-        $filename = get_user_responses_filename($username, $id);
+        $filename = get_user_responses_filename($username, $exp, $id);
         
         if (is_file($filename)) {
             $responses = array_merge(read_csv($filename), $responses);
@@ -70,9 +70,9 @@ function get_responses($username, $id_list) {
     return $responses;
 }
 
-function get_exp_data($username, $id) {
-    $metadata = get_metadata($username, $id);
-    $conditions = get_conditions();
+function get_exp_data($username, $exp, $id) {
+    $metadata = get_metadata($username, $exp, $id);
+    $conditions = get_conditions($exp);
     $condition = $conditions[$metadata['Condition_Index']];
     
     if (!isset($condition['Stimuli'])) $condition['Stimuli'] = '';
@@ -85,7 +85,7 @@ function get_exp_data($username, $id) {
         'condition' => $condition,
         'procedure' => get_exp_files('experiment/procedures/' . $condition['Procedure']),
         'stimuli'   => $stim,
-        'responses' => get_responses($username, $metadata['ID_list']),
+        'responses' => get_responses($username, $exp, $metadata['ID_list']),
         'shuffle_seed' => $metadata['Shuffle_Seed']
     ];
 }
@@ -98,16 +98,16 @@ function get_trial_template() {
     return file_get_contents(APP_ROOT . '/code/html/trial-template.html');
 }
 
-function get_user_experiment_resources($username, $id) {
+function get_user_experiment_resources($username, $exp, $id) {
     return json_encode([
         'trial_template' => get_trial_template(),
-        'exp_data' => get_exp_data($username, $id),
+        'exp_data' => get_exp_data($username, $exp, $id),
         'trial_types' => get_trial_types(),
         'settings' => get_client_settings(),
         'user' => [
             'name' => $username,
             'id' => $id,
-            'exp' => get_current_experiment()
+            'exp' => $exp
         ]
     ]);
 }
@@ -117,20 +117,24 @@ function get_client_settings() {
 }
 
 function get_experiment_resources() {
-    $login = login();
+    $exp = get_current_experiment();
+    $login = login($exp);
     
-    return get_user_experiment_resources($login['username'], $login['id']);
+    return get_user_experiment_resources($login['username'], $exp, $login['id']);
 }
 
-function login() {
+function login($exp) {
     $login = get_login_inputs();
     validate_login($login);
-    extract($login);
     
-    if (user_data_exists($username)) {
-        login_returning_user($username, $id);
+    $username        = $login['username'];
+    $id              = $login['id'];
+    $condition_index = $login['condition_index'];
+    
+    if (user_data_exists($username, $exp)) {
+        login_returning_user($username, $exp, $id);
     } else {
-        login_new_user($username, $id, $condition_index);
+        login_new_user($username, $exp, $id, $condition_index);
     }
     
     return $login;
@@ -159,17 +163,17 @@ function goto_login($error_code = false) {
     exit;
 }
 
-function user_data_exists($username) {
-    return is_file(get_user_metadata_filename($username));
+function user_data_exists($username, $exp) {
+    return is_file(get_user_metadata_filename($username, $exp));
 }
 
-function login_new_user($username, $id, $condition_index = null) {
-    $condition_index = get_and_validate_condition_index($condition_index);
-    record_first_time_login($username, $id, $condition_index);
+function login_new_user($username, $exp, $id, $condition_index = null) {
+    $condition_index = get_and_validate_condition_index($condition_index, $exp);
+    record_first_time_login($username, $exp, $id, $condition_index);
 }
 
-function get_and_validate_condition_index($submitted_index) {
-    $conditions = get_conditions();
+function get_and_validate_condition_index($submitted_index, $exp) {
+    $conditions = get_conditions($exp);
     $condition_index = ($submitted_index === '-1' or $submitted_index === null)
                      ? rand(0, count($conditions) - 1)
                      : $submitted_index;
@@ -181,26 +185,26 @@ function get_and_validate_condition_index($submitted_index) {
     return $condition_index;
 }
 
-function login_returning_user($username, $id) {
-    $last_id = get_last_id($username);
+function login_returning_user($username, $exp, $id) {
+    $last_id = get_last_id($username, $exp);
     
     // if $last_id === $id, then they just refreshed the page
     if ($last_id !== $id) {
-        record_returning_login($username, $id, $last_id);
+        record_returning_login($username, $exp, $id, $last_id);
     }
 }
 
-function get_last_id($username) {
-    return array_key_last(get_metadata($username));
+function get_last_id($username, $exp) {
+    return array_key_last(get_metadata($username, $exp));
 }
 
-function record_first_time_login($username, $id, $condition_index) {
-    record_metadata($username, $id, [
+function record_first_time_login($username, $exp, $id, $condition_index) {
+    record_metadata($username, $exp, $id, [
         'Condition_Index' => $condition_index,
         'Shuffle_Seed' => get_random_string(8)
     ]);
 }
 
-function record_returning_login($username, $id, $previous_id) {
-    record_metadata($username, $id, ['Previous_ID' => $previous_id]);
+function record_returning_login($username, $exp, $id, $previous_id) {
+    record_metadata($username, $exp, $id, ['Previous_ID' => $previous_id]);
 }

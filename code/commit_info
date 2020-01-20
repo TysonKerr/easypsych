@@ -1,8 +1,6 @@
-82 dev 1
+82 data-menu 2
 
 Previous Commit info:
-2020-01-18 09:02:10 -0800
-f3765711a9deb8efb5d41ee44471b50ee4e764c8
-removed cached random generators from CSV
-
-this way, if people send the same shuffle seed to CSV.build, they actually get the same shuffled file back
+2020-01-18 09:52:20 -0800
+a8e9a41e62598d3a4a926a68b66f2db992ef98df
+changed helper.parse functions to not cast "" to 0
