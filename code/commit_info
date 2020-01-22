@@ -1,8 +1,8 @@
-82 data-menu 5
+82 data-menu 6
 
 Previous Commit info:
-2020-01-21 20:02:41 -0800
-ebc2a9f85feb8b362db078af372714ec170d301b
-bug fix in data menu
+2020-01-21 20:04:20 -0800
+0a9303d9bbb8dfffd29c3f37de1cfc77edee94a7
+added index file to data/
 
-made expand buttons not submit form
+made this file respawn when experiment is run

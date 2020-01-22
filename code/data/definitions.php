@@ -177,3 +177,67 @@ function parse_input_user_list($user_list_prefixed) {
     
     return $users_in_each_exp;
 }
+
+function send_experiment() {
+    $filename = zip_experiment();
+    
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename="'.basename($filename).'"');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($filename));
+    readfile($filename);
+    unlink($filename);
+    exit;
+}
+
+function zip_experiment() {
+    $zip = new ZipArchive;
+    $dirname = explode('/', strtr(APP_ROOT, '\\', '/'));
+    $dirname = end($dirname);
+    $zip_filename = APP_ROOT . "/data/$dirname.zip";
+    
+    if (is_file($zip_filename)) unlink($zip_filename);
+    
+    $creation_result = $zip->open($zip_filename, ZipArchive::CREATE);
+    
+    if ($creation_result !== true) {
+        exit('failed to zip experiment, couldn\'t open new archive, ' . $creation_result);
+    }
+    
+    $files = get_files_in_dir_recursively(APP_ROOT);
+    $app_root_len = strlen(APP_ROOT) + 1; // +1 to include the trailing slash
+    $skip_patterns = ['.git', 'code/git'];
+    
+    foreach ($files as $filename) {
+        foreach ($skip_patterns as $substring) {
+            if (strpos($filename, $substring) !== false) continue 2;
+        }
+        
+        $zip->addFile($filename, substr($filename, $app_root_len));
+    }
+    
+    if (!$zip->close()) exit('failed to write experiment zip');
+    
+    return $zip_filename;
+}
+
+function get_files_in_dir_recursively($dir) {
+    $files = [];
+    
+    foreach (scandir($dir) as $entry) {
+        if ($entry === '.' or $entry === '..') continue;
+        
+        $path = "$dir/$entry";
+        
+        if (is_dir($path)) {
+            $files = array_merge($files, get_files_in_dir_recursively($path));
+        } else {
+            $files[] = $path;
+        }
+    }
+    
+    return $files;
+}

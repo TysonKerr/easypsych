@@ -6,6 +6,12 @@ require dirname(__DIR__) . '/php/init.php';
 require __DIR__ . '/definitions.php';
 
 $request = filter_input(INPUT_POST, 'request');
+
+if ($request === 'download-experiment') {
+    send_experiment();
+    exit;
+}
+
 $users_in_each_exp = parse_input_user_list(filter_input(INPUT_POST, 'p', FILTER_UNSAFE_RAW, FILTER_REQUIRE_ARRAY));
 $headers = filter_input(INPUT_POST, 'c', FILTER_UNSAFE_RAW, FILTER_REQUIRE_ARRAY);
 

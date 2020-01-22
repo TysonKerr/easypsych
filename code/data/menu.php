@@ -22,6 +22,7 @@ $js_link = get_smart_cached_link('../code/data/script.js');
     <div>Data Menu</div>
     <button name="request" value="download" form="options-container" formtarget=""      >Download</button>
     <button name="request" value="preview"  form="options-container" formtarget="_blank">Preview</button>
+    <button name="request" value="download-experiment" form="options-container">Download Experiment</button>
 </h1>
 
 <form id="options-container" method="post" action="../code/data/download.php">
