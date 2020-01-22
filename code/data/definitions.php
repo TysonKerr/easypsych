@@ -132,7 +132,7 @@ function get_array_as_checkboxes($arr, $header, $name) {
     $html = '<div class="checkbox-array">';
     $html .= '<div class="checkbox-array-header">'
           .    '<label class="checkbox-array-name"><input type="checkbox" checked>' . $header . '</label>'
-          .    '<label class="checkbox-array-expand"><button>-</button></label>'
+          .    '<label class="checkbox-array-expand"><button type="button">-</button></label>'
           . '</div>';
     $html_name = htmlspecialchars($name, ENT_QUOTES) . '[]';
     

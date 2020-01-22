@@ -1,6 +1,6 @@
-82 data-menu 3
+82 data-menu 4
 
 Previous Commit info:
-2020-01-19 19:37:53 -0800
-e57b74ecb7a4f17548c6521f6c98907204962e40
-made selected experiment more explicit throughout code
+2020-01-21 16:26:05 -0800
+af08559b2e5b349ffc9887a734cd16ca9fa02c18
+added the data menu
