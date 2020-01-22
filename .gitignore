@@ -3,3 +3,6 @@ data/*
 
 # ignore file locks created by OpenOffice
 **/.~lock.*
+
+# ignore password
+experiment/password.php

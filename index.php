@@ -2,6 +2,7 @@
     require __DIR__ . '/code/php/init.php';
     require APP_ROOT . '/code/php/index-definitions.php';
     
+    verify_password_has_been_set();
     $experiment = get_current_experiment();
     $experiment_title = get_experiment_title();
     $condition_choice = get_condition_choice_html($experiment);

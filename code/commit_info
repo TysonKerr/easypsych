@@ -1,6 +1,6 @@
-82 data-menu 8
+82 data-menu 9
 
 Previous Commit info:
-2020-01-22 11:11:03 -0800
-1ebecf77b459febffc9603c43b0003d8dcc0f265
-added archive ability to data menu
+2020-01-22 11:40:50 -0800
+0437206bd64b7e59d4a156d320602c2b1ddee830
+ensured data menu is being accessed from /data/

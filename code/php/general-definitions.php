@@ -1,6 +1,7 @@
 <?php
 
 define('APP_ROOT', dirname(dirname(__DIR__)));
+define('PASSWORD', APP_ROOT . '/experiment/password.php');
 
 function get_setting($setting_name) {
     $settings = get_all_settings();
@@ -368,4 +369,17 @@ function add_data_menu() {
         APP_ROOT . '/data/index.php',
         file_get_contents(APP_ROOT . '/code/data/index.php')
     );
+}
+
+function verify_password_has_been_set() {
+    if (!is_file(PASSWORD)) {
+        require APP_ROOT . '/code/admin/index.php';
+        exit;
+    }
+}
+
+function get_password_hash() {
+    if (!is_file(PASSWORD)) return false;
+    
+    return substr(trim(file_get_contents(PASSWORD)), 7, -2);
 }
