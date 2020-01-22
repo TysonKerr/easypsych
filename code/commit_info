@@ -1,8 +1,6 @@
-82 data-menu 6
+82 data-menu 7
 
 Previous Commit info:
-2020-01-21 20:04:20 -0800
-0a9303d9bbb8dfffd29c3f37de1cfc77edee94a7
-added index file to data/
-
-made this file respawn when experiment is run
+2020-01-22 07:26:02 -0800
+949cfcaed54062c783295b28234fe3ced100c70c
+added ability to download entire experiment

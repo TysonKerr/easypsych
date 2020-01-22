@@ -1,6 +1,7 @@
 <?php
 
 define('DATA_DIR', APP_ROOT . '/data');
+define('ARCHIVE', APP_ROOT . '/data/archive.txt');
 require APP_ROOT . '/code/php/experiment-definitions.php';
 
 function find_users($dir) {
@@ -79,9 +80,14 @@ function get_column_options($users_in_each_exp) {
     return get_array_as_checkboxes($columns_sorted, 'Columns', 'c');
 }
 
-function get_user_options($users_in_each_exp) {
+function get_user_options($users_in_each_exp, $from_archive = false) {
     $users_with_exp_prefix = get_users_with_exp_prefix($users_in_each_exp);
-    return get_array_as_checkboxes($users_with_exp_prefix, 'Participants', 'p');
+    $filtered_users = get_users_filtered_by_archive($users_with_exp_prefix, $from_archive);
+    $header = $from_archive ? 'Archived Participants' : 'Participants';
+    $button = $from_archive ? 'remove from archive' : 'add to archive';
+    $class  = $from_archive ? 'js-de-archive' : 'js-archive';
+    $button = "<button type='button' class='$class'>$button</button>";
+    return get_array_as_checkboxes($filtered_users, $header, 'p', $from_archive, $button, $from_archive);
 }
 
 function sort_columns_into_groups($columns) {
@@ -128,22 +134,27 @@ function sort_columns_into_groups($columns) {
     return $columns_sorted;
 }
 
-function get_array_as_checkboxes($arr, $header, $name) {
-    $html = '<div class="checkbox-array">';
-    $html .= '<div class="checkbox-array-header">'
-          .    '<label class="checkbox-array-name"><input type="checkbox" checked>' . $header . '</label>'
-          .    '<label class="checkbox-array-expand"><button type="button">-</button></label>'
-          . '</div>';
+function get_array_as_checkboxes($arr, $header, $name, $unchecked = false, $extra_html = '', $collapsed = false) {
+    $header_display = htmlspecialchars($header, ENT_QUOTES);
+    $checked = $unchecked ? '' : 'checked';
     $html_name = htmlspecialchars($name, ENT_QUOTES) . '[]';
+    $class = 'checkbox-array' . ($collapsed ? ' collapsed' : '');
+    $button_html = $collapsed ? '+' : '-';
+    $html = "<div class='$class'>";
+    $html .= '<div class="checkbox-array-header">'
+          .    "<label class='checkbox-array-name'><input type='checkbox' $checked>$header_display</label>"
+          .    "<span>$extra_html</span>"
+          .    "<label class='checkbox-array-expand'><button type='button' class='expansion-button'>$button_html</button></label>"
+          . '</div>';
     
     foreach ($arr as $key => $val) {
         if (is_array($val)) {
-            $html .= get_array_as_checkboxes($val, $key, $name);
+            $html .= get_array_as_checkboxes($val, $key, $name, $unchecked);
         } else {
             $html_val = htmlspecialchars($key, ENT_QUOTES);
             $html_display = htmlspecialchars($val, ENT_QUOTES);
             $html .= '<label class="checkbox-array-option">'
-                  .  "<input type='checkbox' name='$html_name' value='$html_val' checked>$html_display"
+                  .  "<input type='checkbox' name='$html_name' value='$html_val' $checked>$html_display"
                   .  '</label>';
         }
     }
@@ -240,4 +251,38 @@ function get_files_in_dir_recursively($dir) {
     }
     
     return $files;
+}
+
+function get_users_filtered_by_archive($users_with_exp_prefix, $from_archive) {
+    $filtered_users = [];
+    $archive = get_user_archive();
+    
+    foreach ($users_with_exp_prefix as $exp => $user_list) {
+        foreach ($user_list as $username_with_exp_prefix => $username) {
+            if (isset($archive[$username_with_exp_prefix]) === $from_archive) {
+                $filtered_users[$exp][$username_with_exp_prefix] = $username;
+            }
+        }
+    }
+    
+    return $filtered_users;
+}
+
+function get_user_archive() {
+    if (is_file(ARCHIVE)) {
+        $list = explode("\n", file_get_contents(ARCHIVE));
+        $archive = [];
+        
+        foreach ($list as $user) {
+            $archive[$user] = $user;
+        }
+        
+        return $archive;
+    } else {
+        return [];
+    }
+}
+
+function set_user_archive($archive) {
+    file_put_contents(ARCHIVE, implode("\n", array_keys($archive)));
 }

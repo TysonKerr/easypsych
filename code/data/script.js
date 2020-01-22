@@ -1,11 +1,14 @@
 document.addEventListener("click", function(e) {
-    if (e.target.tagName === "BUTTON") {
-        let closest_checkbox_array = e.target.closest(".checkbox-array");
-        
-        if (closest_checkbox_array) {
-            let expanding = e.target.innerHTML === "+";
-            resize_checkbox_array(closest_checkbox_array, expanding);
-        }
+    if (e.target.classList.contains("expansion-button")) {
+        trigger_checkbox_array_expansion(e.target);
+    }
+    
+    if (e.target.classList.contains("js-archive")) {
+        add_selected_to_archive();
+    }
+    
+    if (e.target.classList.contains("js-de-archive")) {
+        remove_selected_from_archive();
     }
 });
 
@@ -28,10 +31,10 @@ window.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-function resize_checkbox_array(checkbox_array_node, is_expanding) {
-    let button = checkbox_array_node.querySelector("button");
-    
-    button.innerHTML = is_expanding ? "-" : "+";
+function trigger_checkbox_array_expansion(expand_button) {
+    let is_expanding = expand_button.innerHTML === "+";
+    let checkbox_array_node = expand_button.closest(".checkbox-array");
+    expand_button.innerHTML = is_expanding ? "-" : "+";
     checkbox_array_node.classList.toggle("collapsed", !is_expanding);
 }
 
@@ -60,4 +63,66 @@ function set_group_checkbox(checkbox_array_node, set_parents = true) {
         
         if (parent_checkbox_array_node) set_group_checkbox(parent_checkbox_array_node);
     }
+}
+
+function add_selected_to_archive() {
+    update_archive();
+}
+
+function remove_selected_from_archive() {
+    update_archive(true);
+}
+
+function get_selected_users(archive = false) {
+    let btn_selector = archive ? ".js-de-archive" : ".js-archive";
+    let archive_btn = document.querySelector(btn_selector);
+    let checkbox_array_node = archive_btn.closest(".checkbox-array");
+    let selected_users = get_selected_in_checkbox_array(checkbox_array_node);
+    return selected_users;
+}
+
+function get_selected_in_checkbox_array(checkbox_array_node) {
+    let checked = checkbox_array_node.querySelectorAll(":checked[name]");
+    return Array.from(checked).map(node => node.value);
+}
+
+function update_archive(removing = false) {
+    let selected_users = get_selected_users(removing);
+    if (selected_users.length < 1) return;
+    
+    disable_archive_buttons();
+    
+    send_archive_update(selected_users, removing, refresh_page);
+}
+
+function disable_archive_buttons() {
+    set_archive_button_disabled_status(true);
+}
+
+function enable_archive_buttons() {
+    set_archive_button_disabled_status(false);
+}
+
+function set_archive_button_disabled_status(status) {
+    document.querySelectorAll(".js-archive, .js-de-archive").forEach(button => {
+        button.disabled = status;
+    });
+}
+
+function refresh_page() {
+    window.location.reload(true);
+}
+
+function send_archive_update(users, removing, callback) {
+    const http_request = new XMLHttpRequest();
+    
+    http_request.onreadystatechange = function() {
+        if (http_request.readyState === XMLHttpRequest.DONE) {
+            callback();
+        }
+    };
+    
+    http_request.open("POST", "../code/data/archive.php");
+    http_request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    http_request.send("r=" + (removing ? 1 : 0) + "&u=" + encodeURIComponent(JSON.stringify(users)));
 }

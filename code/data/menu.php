@@ -28,6 +28,7 @@ $js_link = get_smart_cached_link('../code/data/script.js');
 <form id="options-container" method="post" action="../code/data/download.php">
     <?= get_column_options($users_in_each_exp) ?>
     <?= get_user_options($users_in_each_exp) ?>
+    <?= get_user_options($users_in_each_exp, true) ?>
 </form>
 
 </body>

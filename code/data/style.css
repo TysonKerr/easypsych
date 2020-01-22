@@ -55,33 +55,31 @@ html {
     border: 1px solid var(--border-color);
     background-color: var(--bgc);
     margin: 2px;
-    padding-bottom: 2px;
     overflow: hidden;
 }
 
 .checkbox-array-header {
-    display: block;
+    display: grid;
+    grid-template-columns: auto auto 1fr;
     font-weight: bold;
-    white-space: nowrap;
     background: linear-gradient(var(--bgc), var(--gradient));
     padding-bottom: 3px;
+    white-space: nowrap;
+    height: 1.5em;
 }
 
 .checkbox-array-name {
-    float: left;
-    margin-right: 1.5em;
+    padding-right: 0.5em;
 }
 
 .checkbox-array-expand {
     text-align: right;
-    display: block;
 }
 
-.checkbox-array button {
+.expansion-button {
     padding: 0 2px;
     font-size: 50%;
     width: 2em;
-    margin-left: -3em;
     vertical-align: top;
 }
 
@@ -90,8 +88,12 @@ html {
     padding: 0 4px 0 0;
 }
 
+.checkbox-array-option:last-child {
+    margin-bottom: 2px;
+}
+
 .checkbox-array.collapsed {
-    height: 1.2em;
+    height: 1.5em;
 }
 
 #options-container {
