@@ -1,5 +1,6 @@
 <?php
 
+if (!isset($from_index)) exit();
 require dirname(__DIR__) . '/php/init.php';
 require __DIR__ . '/definitions.php';
 $css_link = get_smart_cached_link('../code/data/style.css');

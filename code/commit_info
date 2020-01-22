@@ -1,6 +1,6 @@
-82 data-menu 7
+82 data-menu 8
 
 Previous Commit info:
-2020-01-22 07:26:02 -0800
-949cfcaed54062c783295b28234fe3ced100c70c
-added ability to download entire experiment
+2020-01-22 11:11:03 -0800
+1ebecf77b459febffc9603c43b0003d8dcc0f265
+added archive ability to data menu
