@@ -1,6 +1,6 @@
-82 data-menu 2
+82 data-menu 3
 
 Previous Commit info:
-2020-01-18 09:52:20 -0800
-a8e9a41e62598d3a4a926a68b66f2db992ef98df
-changed helper.parse functions to not cast "" to 0
+2020-01-19 19:37:53 -0800
+e57b74ecb7a4f17548c6521f6c98907204962e40
+made selected experiment more explicit throughout code
