@@ -7,6 +7,7 @@
     $exp_js_link = get_smart_cached_link('code/js/experiment.js');
     $helper_js_link = get_smart_cached_link('code/js/helper.js');
     $csv_js_link = get_smart_cached_link('code/js/CSV.js');
+    add_data_menu();
 ?><!DOCTYPE html>
 <html>
 <head>

@@ -9,6 +9,7 @@
     $login_script_link = get_smart_cached_link('code/js/login.js');
     $login_error = get_error_message();
     $exp_input = get_exp_input($experiment);
+    add_data_menu();
 ?><!DOCTYPE html>
 <html>
 <head>

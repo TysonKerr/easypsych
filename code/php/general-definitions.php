@@ -359,3 +359,13 @@ function get_csv_data($filename) {
     
     return $data;
 }
+
+function add_data_menu() {
+    if (!is_dir(APP_ROOT . '/data')) return;
+    if (is_file(APP_ROOT . '/data/index.php')) return;
+    
+    file_put_contents(
+        APP_ROOT . '/data/index.php',
+        file_get_contents(APP_ROOT . '/code/data/index.php')
+    );
+}
