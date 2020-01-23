@@ -3,6 +3,7 @@
 if (!isset($from_index)) exit();
 require dirname(__DIR__) . '/php/init.php';
 require __DIR__ . '/definitions.php';
+require_login();
 $css_link = get_smart_cached_link('../code/data/style.css');
 $js_link = get_smart_cached_link('../code/data/script.js');
 
@@ -24,6 +25,7 @@ $js_link = get_smart_cached_link('../code/data/script.js');
     <button name="request" value="download" form="options-container" formtarget=""      >Download</button>
     <button name="request" value="preview"  form="options-container" formtarget="_blank">Preview</button>
     <button name="request" value="download-experiment" form="options-container">Download Experiment</button>
+    <form method="post" action="../code/admin/logout.php"><button>Log out</button></form>
 </h1>
 
 <form id="options-container" method="post" action="../code/data/download.php">

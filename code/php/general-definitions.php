@@ -371,15 +371,81 @@ function add_data_menu() {
     );
 }
 
+function start_session() {
+    if (!defined('APP_ROOT')) return false;
+    
+    $sess_path = APP_ROOT . '/data/sess';
+    
+    if (!is_dir($sess_path)) mkdir($sess_path, 0755, true);
+    
+    session_save_path($sess_path);
+    return session_start();
+}
+
 function verify_password_has_been_set() {
-    if (!is_file(PASSWORD)) {
-        require APP_ROOT . '/code/admin/index.php';
+    if (!password_has_been_set()) {
+        request_password(
+            'Set Password',
+            'Please create a password:',
+            get_url_to_root() . '/code/admin/set-password.php'
+        );
         exit;
     }
 }
 
+function password_has_been_set() {
+    return is_file(PASSWORD);
+}
+
 function get_password_hash() {
-    if (!is_file(PASSWORD)) return false;
+    if (!password_has_been_set()) return false;
     
     return substr(trim(file_get_contents(PASSWORD)), 7, -2);
+}
+
+function require_login() {
+    verify_password_has_been_set();
+    start_session();
+    
+    if (isset($_SESSION['admin'])) return;
+    
+    $title = 'Login';
+    $prompt = 'Please enter your password:';
+    
+    if (!filter_has_var(INPUT_POST, 'password')) {
+        request_password($title, $prompt);
+        exit;
+    }
+    
+    $submitted_password = filter_input(INPUT_POST, 'password');
+    
+    if (!password_verify($submitted_password, get_password_hash())) {
+        request_password($title, "<div class='error'>Incorrect password</div>$prompt");
+        exit;
+    } else {
+        $_SESSION['admin'] = true;
+        refresh();
+    }
+}
+
+function get_url_to_root() {
+    $cwd = getcwd();
+    $url = '.';
+    
+    while ($cwd !== APP_ROOT) {
+        $url .= '/..';
+        $cwd = dirname($cwd);
+    }
+    
+    return $url;
+}
+
+function request_password($title, $prompt, $action = false) {
+    $action = $action ? "action='$action'" : '';
+    require APP_ROOT . '/code/admin/submit-password.php';
+}
+
+function refresh() {
+    header("Location: {$_SERVER['REQUEST_URI']}", true, 303);
+    exit;
 }

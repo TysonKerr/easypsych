@@ -220,7 +220,7 @@ function zip_experiment() {
     
     $files = get_files_in_dir_recursively(APP_ROOT);
     $app_root_len = strlen(APP_ROOT) + 1; // +1 to include the trailing slash
-    $skip_patterns = ['.git', 'code/git'];
+    $skip_patterns = ['.git', 'code/git', 'experiment/password.php', 'data/sess/'];
     
     foreach ($files as $filename) {
         foreach ($skip_patterns as $substring) {
