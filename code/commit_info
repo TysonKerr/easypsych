@@ -1,6 +1,6 @@
-82 data-menu 10
+93 dev 0
 
 Previous Commit info:
-2020-01-22 14:14:29 -0800
-72f6cb3d2a65d9363b68f0037f22c1242aa99d9b
-added password creation to index
+2020-01-22 22:16:05 -0800
+994fa2fe6e899b7d5c63e7d637798c2996903a51
+added admin login and logout

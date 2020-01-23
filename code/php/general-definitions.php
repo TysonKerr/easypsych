@@ -378,6 +378,7 @@ function start_session() {
     
     if (!is_dir($sess_path)) mkdir($sess_path, 0755, true);
     
+    ini_set('session.gc_divisor', 1);
     session_save_path($sess_path);
     return session_start();
 }
