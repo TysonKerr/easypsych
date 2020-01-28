@@ -1,51 +1,29 @@
 "use strict";
 var Experiment = function(container, resources) {
-    let loaded_resources = this.loader.load(resources);
-    this.settings = loaded_resources.settings;
-    this.data = loaded_resources.data;
-    this.proc_index = loaded_resources.proc_index;
-    this.trial_number = loaded_resources.trial_number;
-    this.user = loaded_resources.user;
-    this.post_trial_level = 0;
+    Object.assign(this, this.loader.load(resources));
     this.trial = null;
     
     this.trial_display = new this.Trial_Display(
-        container,
-        loaded_resources.trial_template,
-        loaded_resources.trial_types
+        container, this.trial_template, this.trial_types
     );
     
+    delete this.trial_template; // not the actual string used, misleading to leave it around
+    
+    this.data_submission.user = this.user;
     this.validator.validate(this);
     
     this.add_event_listeners();
 };
 
 Experiment.prototype = {
-    /* below are examples of the properties an experiment would have
-    data: {
-        condition: [],
-        procedure: [],
-        stimuli: [],
-        responses: [],
-        shuffle_seed: "rand_string"
-    },
-    trial: null,
-    trial_number: 0,
-    proc_index: 0,
-    post_trial_level: 0,
-    trial_display: {},
-    validator: {},
-    settings: {}
-    */
-    
     start_current_trial: function() {
-        this.trial_display.start(this.get_trial_values(this.proc_index, this.post_trial_level));
+        this.trial_display.start(this.get_trial_values(this.proc_index));
     },
     
-    get_trial_values: function(proc_index, post_trial_level) {
-        if (!this.position_exists_in_proc(proc_index, post_trial_level)) return false;
+    get_trial_values: function(proc_index) {
+        if (!this.is_valid_proc_index(proc_index)) return false;
         
-        let proc_values = this.data.procedure[proc_index][post_trial_level];
+        let proc_values = this.data.procedure[proc_index];
         let stim_indices = this.get_stimuli_indices(proc_values["Stimuli"]);
         let stim_values = [];
         
@@ -56,44 +34,54 @@ Experiment.prototype = {
         }
         
         return {
-            procedure: [proc_values],
+            procedure: proc_values,
             stimuli: stim_values,
         };
     },
     
-    get_stimuli_indices: function(stimuli_range) {
-        return helper.parse_range_str(stimuli_range)
+    get_stimuli_indices: function(stim_range_str) {
+        return helper.parse_range_str(stim_range_str)
             .map(item => parseInt(item) - 2)
             .filter(num => !isNaN(num));
     },
     
-    position_exists_in_proc: function(proc_index, post_trial_level) {
-        return proc_index in this.data.procedure
-            && post_trial_level in this.data.procedure[proc_index];
+    is_valid_proc_index: function(proc_index) {
+        return proc_index in this.data.procedure;
     },
     
     receive_trial_submission: function(json_responses) {
-        let exp_command = this.data_submission.receive(json_responses, this.data.responses, this);
-        
+        const response_set = JSON.parse(json_responses);
+        const exp_command = this.get_response_exp_command(response_set);
+        const next_proc_index = this.get_next_proc_index(exp_command);
+        this.add_info_to_responses(response_set, next_proc_index);
+        this.format_responses(response_set);
+        this.data_submission.queue_response_submission(response_set);
+        this.data.responses.push(response_set);
+        this.proc_index = next_proc_index;
         this.trial = null;
-        this.set_index_to_next_trial(exp_command);
         this.start_current_trial();
     },
     
-    set_index_to_next_trial: function(exp_command) {
-        if (exp_command.substring(0, 14) === "mod proc index") {
-            this.use_exp_command_to_set_next_proc_index(exp_command);
-        } else {
-            this.set_proc_index_to_next_available_trial();
-        }
+    get_response_exp_command: function(response_set) {
+        return "Exp_Command" in response_set[0] ? response_set[0]["Exp_Command"] : "";
     },
     
-    use_exp_command_to_set_next_proc_index: function(exp_command) {
+    get_next_proc_index: function(exp_command) {
+        let next_index;
+        
+        if (exp_command.substring(0, 14) === "mod proc index") {
+            next_index = this.get_commanded_proc_index(exp_command);
+        } else {
+            next_index = this.proc_index + 1;
+        }
+        
+        return Math.max(0, Math.min(this.data.procedure.length, next_index));
+    },
+    
+    get_commanded_proc_index: function(exp_command) {
         let [new_index, is_relative] = this.parse_mod_proc_index(exp_command);
         
-        let new_proc_index = is_relative ? this.proc_index + new_index : new_index;
-        
-        this.change_trial(new_proc_index);
+        return is_relative ? this.proc_index + new_index : new_index;
     },
     
     parse_mod_proc_index: function(exp_command) {
@@ -123,27 +111,31 @@ Experiment.prototype = {
         return [new_proc_index, relative];
     },
     
-    change_trial: function(new_proc_index) {
-        this.data_submission.queue_response_submission(
-            this.data.responses[this.trial_number],
-            new_proc_index,
-            this.user
-        );
-        
-        this.post_trial_level = 0;
-        this.proc_index = Math.min(Math.max(new_proc_index, 0), this.data.procedure.length);
-        ++this.trial_number;
+    get_response_added_info: function(next_proc_index) {
+        return {
+            "Exp_Username": this.user.name,
+            "Exp_ID": this.user.id,
+            "Exp_Name": this.user.exp,
+            "Exp_Date": helper.get_current_date(),
+            "Exp_Timestamp": performance.timeOrigin + performance.now(),
+            "Exp_Trial_Number": this.data.responses.length,
+            "Exp_Proc_Index": this.proc_index,
+            "Exp_Next_Proc_Index": next_proc_index,
+        };
     },
     
-    set_proc_index_to_next_available_trial: function() {
-        ++this.post_trial_level;
+    add_info_to_responses: function(response_set, next_proc_index) {
+        const info = this.get_response_added_info(next_proc_index);
         
-        if (!(this.proc_index in this.data.procedure)
-            || !(this.post_trial_level in this.data.procedure[this.proc_index])
-            || this.data.procedure[this.proc_index][this.post_trial_level]["Trial Type"] === ""
-        ) {
-            this.change_trial(this.proc_index + 1);
-        }
+        response_set.forEach(row => Object.assign(row, info));
+    },
+    
+    format_responses: function(response_set) {
+        response_set.forEach(row => {
+            for (let col in row) {
+                row[col] = String(row[col]);
+            }
+        });
     },
     
     fetch_csv: function(filename, shuffle_seed_suffix = "") {
@@ -188,7 +180,7 @@ Experiment.prototype = {
     
     wait_for_data_submission_to_complete: function() {
         return new Promise(resolve => {
-            this.data_submission.weatch_for_empty_queue(() => resolve());
+            this.data_submission.watch_for_empty_queue(() => resolve());
         });
     },
 };
@@ -216,10 +208,10 @@ Experiment.prototype.Trial_Display.prototype = {
     
     get_trial_page: function(trial_values) {
         if (!trial_values) {
-            trial_values = {stimuli: [], procedure: [{"Trial Type": "end-of-experiment"}]};
+            trial_values = {stimuli: [], procedure: {"Trial Type": "end-of-experiment"}};
         }
         
-        let trial_type = this.trial_types[trial_values.procedure[0]["Trial Type"]];
+        let trial_type = this.trial_types[trial_values.procedure["Trial Type"]];
         let trial = this.trial_template;
         
         trial = this.move_links_to_head(trial);
@@ -265,18 +257,12 @@ Experiment.prototype.Trial_Display.prototype = {
 };
 
 Experiment.prototype.loader = {
-    load: function(exp_resources) {
-        const loaded = {
-            trial_template: exp_resources.trial_template,
-            trial_types: exp_resources.trial_types,
-            data: this.load_exp_data(exp_resources.exp_data),
-            settings: exp_resources.settings,
-            user: exp_resources.user
-        };
+    load: function(resources) {
+        resources.data = this.load_exp_data(resources.data);
         
-        this.set_loaded_trial_and_proc_index(loaded);
+        this.set_loaded_trial_and_proc_index(resources);
         
-        return loaded;
+        return resources;
     },
     
     set_loaded_trial_and_proc_index: function(loaded) {
@@ -285,6 +271,7 @@ Experiment.prototype.loader = {
             loaded.proc_index = 0;
         } else {
             const last_response_set = loaded.data.responses[loaded.data.responses.length - 1];
+            console.log(last_response_set);
             loaded.trial_number = Number(last_response_set[0]["Exp_Trial_Number"]) + 1;
             loaded.proc_index = Number(last_response_set[0]["Exp_Next_Proc_Index"]);
         }
@@ -300,63 +287,20 @@ Experiment.prototype.loader = {
         Object.assign(data.csvs, raw_data.procedure);
         Object.assign(data.csvs, raw_data.stimuli);
         
-        data.stimuli  = CSV.build(data.csvs, 'experiment/stimuli/' + data.condition['Stimuli'],      data.shuffle_seed + "-stim");
-        let proc_file = CSV.build(data.csvs, 'experiment/procedures/' + data.condition['Procedure'], data.shuffle_seed + "-proc");
+        data.stimuli   = CSV.build(data.csvs, 'experiment/stimuli/' + data.condition['Stimuli'],      data.shuffle_seed + "-stim");
+        data.procedure = CSV.build(data.csvs, 'experiment/procedures/' + data.condition['Procedure'], data.shuffle_seed + "-proc");
         
-        data.procedure = this.make_procedure(proc_file);
         data.responses = this.read_responses(raw_data.responses);
         
         this.freeze_data(data);
         
         return data;
     },
-    
-    make_procedure: function(proc_csv) {
-        let procedure = [];
-        
-        for (let i = 0; i < proc_csv.length; ++i) {
-            let trials = this.split_proc_row_into_trials(proc_csv[i]);
-            this.make_post_trials_inherit_earlier_trial_values(trials);
-            procedure.push(trials);
-        }
-        
-        return procedure;
-    },
-    
-    split_proc_row_into_trials: function(proc_row) {
-        let trials = [];
-        
-        for (let col in proc_row) {
-            let post = col.match(/^Post ([0-9]+)/);
-            let index = post ? Number(post[1]) : 0;
-            let header = post ? col.substring(5 + post[1].length).trim() : col;
-            
-            if (!(index in trials)) trials[index] = {};
-            
-            trials[index][header] = proc_row[col];
-        }
-        
-        return trials;
-    },
-    
-    make_post_trials_inherit_earlier_trial_values: function(trials) {
-        let levels = Object.keys(trials);
-        
-        for (let i = 0; i < levels.length - 1; ++i) {
-            for (let col in trials[levels[i]]) {
-                if (!(col in trials[levels[i + 1]])) trials[levels[i + 1]][col] = trials[levels[i]][col];
-            }
-        }
-    },
 
     freeze_data: function(data) {
         Object.freeze(data.condition);
         data.stimuli.forEach(row => Object.freeze(row));
-        
-        data.procedure.forEach(set => {
-            set.forEach(row => Object.freeze(row));
-            Object.freeze(set);
-        });
+        data.procedure.forEach(row => Object.freeze(row));
         
         data.responses.forEach(set => {
             set.forEach(row => Object.freeze(row));
@@ -375,6 +319,7 @@ Experiment.prototype.loader = {
         for (let i = 0; i < csv_responses.length; ++i) {
             let row = csv_responses[i];
             let trial_number = row["Exp_Trial_Number"];
+            console.log(trial_number);
             
             if (!(trial_number in responses)) {
                 responses[trial_number] = [];
@@ -393,90 +338,33 @@ Experiment.prototype.data_submission = {
     error_counter: 0,
     observers_for_empty_queue: [],
     
-    receive: function(json_responses, exp_responses, {trial_number, proc_index, post_trial_level}) {
-        let response_set = this.get_response_set(exp_responses, trial_number);
-        let responses = JSON.parse(json_responses);
-        let exp_command = "Exp_Command" in responses[0] ? responses[0]["Exp_Command"] : "";
-        
-        this.add_info_to_responses(responses, proc_index, trial_number);
-        this.format_responses(responses, post_trial_level);
-        this.merge_responses(response_set, responses);
-        
-        return exp_command;
-    },
-    
-    get_response_set: function(exp_responses, trial_number) {
-        if (!(trial_number in exp_responses)) {
-            exp_responses[trial_number] = [];
-        }
-        
-        return exp_responses[trial_number];
-    },
-    
-    merge_responses: function(response_set, responses) {
-        responses.forEach((row, i) => {
-            if (i in response_set) {
-                Object.assign(response_set[i], row);
-            } else {
-                response_set.push(row);
-            }
-        });
-    },
-    
-    add_info_to_responses: function(responses, proc_index, trial_number) {
-        let date = helper.get_current_date();
-        
-        responses.forEach(row => {
-            row["Exp_Proc_Index"] = proc_index;
-            row["Exp_Date"] = date;
-            row["Exp_Trial_Number"] = trial_number;
-        });
-    },
-    
-    format_responses: function(responses, post_level) {
-        if (post_level > 0) {
-            responses.forEach(row => Object.keys(row).forEach(col => {
-                row[`Post_${post_level}_${col}`] = row[col];
-                delete row[col];
-            }));
-        }
-        
-        responses.forEach(row => {
-            for (let col in row) {
-                row[col] = String(row[col]);
-            }
-        });
-    },
-    
-    queue_response_submission: function(response_set, next_proc_index, {name, id, exp}) {
-        response_set.forEach(row => {
-            row["Exp_Next_Proc_Index"] = next_proc_index;
-            row["Exp_Username"] = name;
-            row["Exp_ID"] = id;
-            row["Exp_Name"] = exp;
-            Object.freeze(row);
-        });
-        
+    queue_response_submission: function(response_set) {
+        response_set.forEach(row => Object.freeze(row));
         Object.freeze(response_set); // cant change responses once they have been submitted to the server
         this.response_submission_queue.push(response_set);
         
         if (this.is_ready_to_submit_responses) {
-            this.submit_responses(name, id, exp);
+            this.submit_responses();
         }
     },
     
-    submit_responses: function(name, id, exp) {
-        this.is_ready_to_submit_responses = false;
-        
-        let responses = [];
-        
-        for (let i = 0; i < this.response_submission_queue.length; ++i) {
-            responses.push(this.response_submission_queue[i]);
+    submit_responses: function() {
+        if (this.response_submission_queue.length < 1) {
+            console.error("attempted to submit responses with empty queue");
+            return;
         }
         
+        this.is_ready_to_submit_responses = false;
+        let responses = this.response_submission_queue;
         let request = new XMLHttpRequest();
-        
-        request.onreadystatechange = () => {
+        request.onreadystatechange = this.get_http_event_handler(request, responses);
+        request.open("POST", "code/php/ajax-responses.php");
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        request.send(this.get_query_string(responses));
+    },
+    
+    get_http_event_handler: function(request, responses) {
+        return () => {
             if (request.readyState === XMLHttpRequest.DONE) {
                 if (request.responseText !== '' || request.status !== 200) {
                     console.error(request.responseText);
@@ -487,25 +375,23 @@ Experiment.prototype.data_submission = {
                     
                     setTimeout(() => {
                         console.log("attempting to submit responses again");
-                        this.submit_responses(name, id);
+                        this.submit_responses();
                     }, wait_time * 1000);
                 } else {
                     this.error_counter = 0;
                     this.clear_responses_from_queue(responses);
                 }
             }
-        };
-        
-        let query_string = "u=" + encodeURIComponent(name)
-            + "&i=" + encodeURIComponent(id)
-            + "&e=" + encodeURIComponent(exp)
+        }
+    },
+    
+    get_query_string: function(responses) {
+        return "u=" + encodeURIComponent(this.user.name)
+            + "&i=" + encodeURIComponent(this.user.id)
+            + "&e=" + encodeURIComponent(this.user.exp)
             + "&responses=" + encodeURIComponent(JSON.stringify(
             responses.reduce((rows, row_set) => rows.concat(row_set), [])
         ));
-        
-        request.open("POST", "code/php/ajax-responses.php");
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        request.send(query_string);
     },
     
     clear_responses_from_queue: function(responses) {
@@ -523,7 +409,7 @@ Experiment.prototype.data_submission = {
         }
     },
     
-    weatch_for_empty_queue: function(callback) {
+    watch_for_empty_queue: function(callback) {
         if (this.response_submission_queue.length === 0) {
             callback();
         } else {
@@ -566,60 +452,39 @@ Experiment.prototype.validator = {
     get_procedure_errors: function(experiment) {
         const proc = experiment.data.procedure;
         const stim = experiment.data.stimuli;
-        const trial_types = experiment.trial_display.trial_types;
+        const trial_types = experiment.trial_types;
         const errors = [];
         
         if (proc.length === 0) return; // nothing to validate
         
-        if (!(0 in proc[0]) || typeof proc[0][0]["Trial Type"] === "undefined") {
+        if (typeof proc[0]["Trial Type"] === "undefined") {
             errors.push('Missing the required "Trial Type" column');
+            return errors;
         }
         
-        let next_post_level = 1;
-        
-        proc[0].forEach((trial, post_trial_level) => {
-            if (post_trial_level === 0) return;
-            
-            if (post_trial_level !== next_post_level) {
-                let msg = "Post trials are not sequential. They must start at 1, and have at least 1 column at each level.\nMissing columns:";
-                
-                for (let i = next_post_level; i < post_trial_level; ++i) {
-                    msg += "\n  Post " + i + " (something)";
-                }
-                
-                errors.push(msg);
+        for (let i = 0; i < proc.length; ++i) {
+            if (!(proc[i]["Trial Type"] in trial_types)) {
+                errors.push(`In row ${i + 2}, under column "Trial Type", the type "${proc[i]["Trial Type"]}" does not exist.`);
             }
             
-            next_post_level = post_trial_level + 1;
-        });
+            if ("Stimuli" in proc[i]) {
+                errors.push(...this.get_proc_stim_errors(proc[i]["Stimuli"], i, stim));
+            }
+        }
         
-        for (let i = 0; i < proc.length; ++i) {
-            proc[i].forEach((trial, post_level) => {
-                if (post_level > 0 && trial["Trial Type"] === "") return;
-                if (!("Trial Type" in trial)) return; // we validated for this earlier, so no need to spam the error messages
-                
-                let orig_column = post_level === 0 ? "Trial Type" : `Post ${post_level} Trial Type`;
-                let error_start = `In row ${i + 2}, under column "${orig_column}"`;
-                
-                if (!(trial["Trial Type"] in trial_types)) {
-                    errors.push(`${error_start}, the type "${trial["Trial Type"]}" does not exist.`);
-                }
-                
-                if ("Stimuli" in trial) {
-                    let stim_indices = helper.parse_range_str(trial["Stimuli"]);
-                    
-                    for (let j = 0; j < stim_indices.length; ++j) {
-                        if (stim_indices[j] === 0 || stim_indices[j] === "") continue;
-                        
-                        let index = stim_indices[j] - 2;
-                        
-                        if (!(index in stim)) {
-                            let msg = post_level === 0 ? 'in the "Stimuli" column' : `for post trial ${post_level}`;
-                            errors.push(`In row ${i + 2}, ${msg}, the stimuli row ${stim_indices[j]} does not exist.`);
-                        }
-                    }
-                }
-            });
+        return errors;
+    },
+    
+    get_proc_stim_errors: function(stim_range_str, proc_index, stimuli) {
+        const errors = [];
+        const stim_indices = helper.parse_range_str(stim_range_str);
+        
+        for (let i = 0; i < stim_indices.length; ++i) {
+            if (stim_indices[i] === 0 || stim_indices[i] === "") continue;
+            
+            if (!((stim_indices[i] - 2) in stimuli)) {
+                errors.push(`In row ${proc_index + 2}, in the "Stimuli" column, the stimuli row ${stim_indices[i]} does not exist.`);
+            }
         }
         
         return errors;

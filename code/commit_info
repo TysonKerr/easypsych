@@ -1,6 +1,6 @@
-93 dev 0
+93 remove-post-trial 1
 
 Previous Commit info:
-2020-01-22 22:16:05 -0800
-994fa2fe6e899b7d5c63e7d637798c2996903a51
-added admin login and logout
+2020-01-23 07:45:04 -0800
+846e7c412243c128b844b989e41a2717d3f79705
+increased frequency of session gc

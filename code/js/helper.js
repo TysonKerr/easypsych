@@ -57,14 +57,14 @@ var helper = {
             && name in values.stimuli[0]
         ) {
             if (values.stimuli[0][name] === ""
-                && name in values.procedure[0]
+                && name in values.procedure
             ) {
-                return values.procedure[0][name];
+                return values.procedure[name];
             } else {
                 return values.stimuli[0][name];
             }
-        } else if (name in values.procedure[0]) {
-            return values.procedure[0][name]
+        } else if (name in values.procedure) {
+            return values.procedure[name]
         }
     },
     

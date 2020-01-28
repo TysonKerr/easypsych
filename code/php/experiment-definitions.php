@@ -101,7 +101,7 @@ function get_trial_template() {
 function get_user_experiment_resources($username, $exp, $id) {
     return json_encode([
         'trial_template' => get_trial_template(),
-        'exp_data' => get_exp_data($username, $exp, $id),
+        'data' => get_exp_data($username, $exp, $id),
         'trial_types' => get_trial_types(),
         'settings' => get_client_settings(),
         'user' => [

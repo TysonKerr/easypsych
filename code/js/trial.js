@@ -128,7 +128,7 @@ trial.submitter = {
     
     get_trial_values_as_output_row: function() {
         return Object.assign(
-            this.add_prefix_to_keys(this.trial.values.procedure[0], "Proc"),
+            this.add_prefix_to_keys(this.trial.values.procedure, "Proc"),
             this.add_prefix_to_keys(this.get_stim_values_as_output_row(), "Stim")
         );
     },
