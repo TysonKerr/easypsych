@@ -1,6 +1,10 @@
-96 remove-post-trial 0
+96 remove-post-trial 1
 
 Previous Commit info:
-2020-01-29 23:02:54 -0500
-95aeec93ada938d16addc55d0f06eb838666dad2
-removed more references to post trials
+2020-01-30 13:56:21 -0500
+78648d22a45d1370f0e187272129a75d54373187
+added back post trials in a new way
+
+at page load, the procedure is generated as a 1d array
+post trials are simply inserted after regular trials
+trials now have 2 extra columns indicating their row and post level

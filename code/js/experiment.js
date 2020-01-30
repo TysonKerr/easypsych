@@ -270,7 +270,6 @@ Experiment.prototype.loader = {
             loaded.proc_index = 0;
         } else {
             const last_response_set = loaded.data.responses[loaded.data.responses.length - 1];
-            console.log(last_response_set);
             loaded.trial_number = Number(last_response_set[0]["Exp_Trial_Number"]) + 1;
             loaded.proc_index = Number(last_response_set[0]["Exp_Next_Proc_Index"]);
         }
