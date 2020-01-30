@@ -1,13 +1,13 @@
 "use strict";
 var Experiment = function(container, resources) {
     Object.assign(this, this.loader.load(resources));
-    this.trial = null;
     
     this.trial_display = new this.Trial_Display(
         container, this.trial_template, this.trial_types
     );
     
     delete this.trial_template; // not the actual string used, misleading to leave it around
+    this.trial = null;
     
     this.data_submission.user = this.user;
     this.validator.validate(this);
@@ -42,7 +42,7 @@ Experiment.prototype = {
     get_stimuli_indices: function(stim_range_str) {
         return helper.parse_range_str(stim_range_str)
             .map(item => parseInt(item) - 2)
-            .filter(num => !isNaN(num));
+            .filter(num => !isNaN(num) && num >= 0);
     },
     
     is_valid_proc_index: function(proc_index) {
@@ -286,14 +286,74 @@ Experiment.prototype.loader = {
         Object.assign(data.csvs, raw_data.procedure);
         Object.assign(data.csvs, raw_data.stimuli);
         
-        data.stimuli   = CSV.build(data.csvs, 'experiment/stimuli/' + data.condition['Stimuli'],      data.shuffle_seed + "-stim");
-        data.procedure = CSV.build(data.csvs, 'experiment/procedures/' + data.condition['Procedure'], data.shuffle_seed + "-proc");
+        data.stimuli = CSV.build(data.csvs, 'experiment/stimuli/' + data.condition['Stimuli'], data.shuffle_seed + "-stim");
+        data.procedure = this.build_procedure(
+            CSV.build(data.csvs, 'experiment/procedures/' + data.condition['Procedure'], data.shuffle_seed + "-proc")
+        );
         
         data.responses = this.read_responses(raw_data.responses);
         
         this.freeze_data(data);
         
         return data;
+    },
+    
+    build_procedure: function(raw_procedure) {
+        const procedure = [];
+        
+        raw_procedure.forEach((row, i) => {
+            procedure.push(...this.split_proc_row_into_trials(row, i));
+        });
+        
+        return procedure;
+    },
+    
+    split_proc_row_into_trials: function(proc_row, row_index) {
+        const trials = [];
+        
+        for (let col in proc_row) {
+            let [level, header] = this.parse_proc_header(col);
+            
+            if (typeof trials[level] === "undefined") {
+                trials[level] = {
+                    "Row_Number": String(row_index),
+                    "Post_Level": String(level)
+                };
+            }
+            
+            trials[level][header] = proc_row[col];
+        }
+        
+        this.make_trials_inherit_from_earlier(trials);
+        
+        return trials.filter(trial => trial["Trial Type"] !== "");
+    },
+    
+    parse_proc_header: function(raw_header) {
+        const post_trial = raw_header.match(/Post (\d+) (.*)/);
+        let level, header;
+        
+        if (!post_trial) {
+            return [0, raw_header];
+        } else {
+            return [Number(post_trial[1]), post_trial[2].trim()];
+        }
+    },
+    
+    make_trials_inherit_from_earlier: function(trials) {
+        let last_trial = null;
+        
+        trials.forEach(trial => {
+            if (last_trial !== null) {
+                for (let col in last_trial) {
+                    if (typeof trial[col] === "undefined") {
+                        trial[col] = last_trial[col];
+                    }
+                }
+            }
+            
+            last_trial = trial;
+        });
     },
 
     freeze_data: function(data) {
@@ -462,27 +522,30 @@ Experiment.prototype.validator = {
         }
         
         for (let i = 0; i < proc.length; ++i) {
+            let row = Number(proc[i]["Row_Number"]) + 2;
+            let col_prefix = proc[i]["Post_Level"] === "0" ? "" : `Post ${proc[i]["Post_Level"]} `;
+            
             if (!(proc[i]["Trial Type"] in trial_types)) {
-                errors.push(`In row ${i + 2}, under column "Trial Type", the type "${proc[i]["Trial Type"]}" does not exist.`);
+                errors.push(`In row ${row}, under column "${col_prefix}Trial Type", the type "${proc[i]["Trial Type"]}" does not exist.`);
             }
             
             if ("Stimuli" in proc[i]) {
-                errors.push(...this.get_proc_stim_errors(proc[i]["Stimuli"], i, stim));
+                errors.push(...this.get_proc_stim_errors(
+                    experiment.get_stimuli_indices(proc[i]["Stimuli"]),
+                    row, col_prefix, stim
+                ));
             }
         }
         
         return errors;
     },
     
-    get_proc_stim_errors: function(stim_range_str, proc_index, stimuli) {
+    get_proc_stim_errors: function(stim_indices, row, col_prefix, stimuli) {
         const errors = [];
-        const stim_indices = helper.parse_range_str(stim_range_str);
         
         for (let i = 0; i < stim_indices.length; ++i) {
-            if (stim_indices[i] === 0 || stim_indices[i] === "") continue;
-            
-            if (!((stim_indices[i] - 2) in stimuli)) {
-                errors.push(`In row ${proc_index + 2}, in the "Stimuli" column, the stimuli row ${stim_indices[i]} does not exist.`);
+            if (!(stim_indices[i] in stimuli)) {
+                errors.push(`In row ${row}, in the "${col_prefix}Stimuli" column, the stimuli row ${stim_indices[i]} does not exist.`);
             }
         }
         

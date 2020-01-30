@@ -1,8 +1,6 @@
-93 remove-post-trial 2
+96 remove-post-trial 0
 
 Previous Commit info:
-2020-01-27 22:36:46 -0800
-3b35a960a86873b52e527570fb09197e29586914
-removed post trials
-
-also refactored a bit, in experiment.js
+2020-01-29 23:02:54 -0500
+95aeec93ada938d16addc55d0f06eb838666dad2
+removed more references to post trials
