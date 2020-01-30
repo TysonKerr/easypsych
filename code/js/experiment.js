@@ -377,7 +377,6 @@ Experiment.prototype.loader = {
         for (let i = 0; i < csv_responses.length; ++i) {
             let row = csv_responses[i];
             let trial_number = row["Exp_Trial_Number"];
-            console.log(trial_number);
             
             if (!(trial_number in responses)) {
                 responses[trial_number] = [];
