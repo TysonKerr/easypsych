@@ -99,8 +99,6 @@ function sort_columns_into_groups($columns) {
         ]
     ];
     
-    $post_columns = [];
-    
     foreach ($columns as $col) {
         if ($col === 'Trial_Duration') continue;
         if ($col === 'Exp_Username')   continue;
@@ -117,18 +115,9 @@ function sort_columns_into_groups($columns) {
             $columns_sorted['Procedure'][$col] = $col;
         } elseif ($start === 'Stim_') {
             $columns_sorted['Stimuli'][$col] = $col;
-        } elseif ($start === 'Post_') {
-            $col_split = explode('_', $col);
-            $post_columns[$col_split[1]][$col] = $col;
         } else {
             $columns_sorted['Responses'][$col] = $col;
         }
-    }
-    
-    ksort($post_columns, SORT_NUMERIC);
-    
-    foreach ($post_columns as $post_level => $columns) {
-        $columns_sorted["Post_$post_level"] = $columns;
     }
     
     return $columns_sorted;

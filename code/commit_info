@@ -1,6 +1,8 @@
-93 remove-post-trial 1
+93 remove-post-trial 2
 
 Previous Commit info:
-2020-01-23 07:45:04 -0800
-846e7c412243c128b844b989e41a2717d3f79705
-increased frequency of session gc
+2020-01-27 22:36:46 -0800
+3b35a960a86873b52e527570fb09197e29586914
+removed post trials
+
+also refactored a bit, in experiment.js
