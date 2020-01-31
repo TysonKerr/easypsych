@@ -1,10 +1,6 @@
-96 remove-post-trial 1
+99 inline-scripts-and-stylesheets 0
 
 Previous Commit info:
-2020-01-30 13:56:21 -0500
-78648d22a45d1370f0e187272129a75d54373187
-added back post trials in a new way
-
-at page load, the procedure is generated as a 1d array
-post trials are simply inserted after regular trials
-trials now have 2 extra columns indicating their row and post level
+2020-01-30 14:55:36 -0500
+e063fa76656d4c4f699c19569666fdbad3557a37
+removed another console log

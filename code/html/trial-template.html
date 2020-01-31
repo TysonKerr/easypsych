@@ -9,6 +9,10 @@
     <script src="code/js/trial.js"></script>
     <script>
         trial.values = "@{trial_values}"; // experiment.js will convert this into the correct object
+
+        window.addEventListener("load", function() {
+            trial.init();
+        });
     </script>
 </head>
 <body>

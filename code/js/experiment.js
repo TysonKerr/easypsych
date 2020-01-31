@@ -182,12 +182,17 @@ Experiment.prototype = {
             this.data_submission.watch_for_empty_queue(() => resolve());
         });
     },
+    
+    begin: function() {
+        this.trial_display.ready.then(() => this.start_current_trial());
+    }
 };
 
 Experiment.prototype.Trial_Display = function(container, trial_template, trial_types) {
     this.container = container;
-    this.trial_template = trial_template.replace(/@{base_url}/, window.location);
+    this.template = trial_template.replace(/@{base_url}/, window.location);
     this.trial_types = trial_types;
+    this.ready = this.inline_scripts_and_stylesheets();
 };
 
 Experiment.prototype.Trial_Display.prototype = {
@@ -211,7 +216,7 @@ Experiment.prototype.Trial_Display.prototype = {
         }
         
         let trial_type = this.trial_types[trial_values.procedure["Trial Type"]];
-        let trial = this.trial_template;
+        let trial = this.template;
         
         trial = this.move_links_to_head(trial);
         
@@ -253,6 +258,71 @@ Experiment.prototype.Trial_Display.prototype = {
             }
         });
     },
+    
+    inline_scripts_and_stylesheets: function() {
+        const parser = new DOMParser();
+        const resources = this.get_existing_resources();
+        const promises = this.replace_links(this, "template", parser, resources);
+        
+        for (let name in this.trial_types) {
+            promises.push(...this.replace_links(this.trial_types[name], "display", parser, resources));
+        }
+        
+        return Promise.all(promises);
+    },
+    
+    replace_links: function(obj, key, parser, resources) {
+        const parsed = parser.parseFromString(obj[key], "text/html");
+        const promises = [];
+        
+        parsed.querySelectorAll("script[src], link[rel='stylesheet'][href]").forEach(el => {
+            promises.push(new Promise(resolve => this.replace_link(obj, key, el, resources, resolve)));
+        });
+        
+        return promises;
+    },
+    
+    replace_link: async function(obj, key, element, resources, resolve) {
+        const is_script = element.tagName === "SCRIPT" ? true : false;
+        const url = is_script ? element.src : element.href;
+        
+        if (!(url in resources)) {
+            resources[url] = this.fetch(url);
+        }
+        
+        const html = this.get_inline_html(await resources[url], is_script);
+        
+        obj[key] = obj[key].replace(element.outerHTML, html);
+        resolve();
+    },
+    
+    fetch: function(url) {
+        return fetch(url, {cache: "no-cache"}).then(resp => resp.text());
+    },
+    
+    get_inline_html: function(contents, is_script) {
+        return (is_script ? "<script>" : "<style>") + "\n"
+            + contents
+            + "\n" + (is_script ? "<\/script>" : "<\/style>");
+    },
+    
+    get_existing_resources: function() {
+        const resources = {};
+        const loc = String(window.location);
+        const base = loc.substring(0, loc.lastIndexOf("/"));
+        
+        for (let type in this.trial_types) {
+            if ("style" in this.trial_types[type]) {
+                resources[`${base}/trial-types/${type}/style.css`] = Promise.resolve(this.trial_types[type].style);
+            }
+            
+            if ("script" in this.trial_types[type]) {
+                resources[`${base}/trial-types/${type}/script.js`] = Promise.resolve(this.trial_types[type].script);
+            }
+        }
+        
+        return resources;
+    }
 };
 
 Experiment.prototype.loader = {

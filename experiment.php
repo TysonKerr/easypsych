@@ -25,7 +25,7 @@
                 <?= $exp_resources ?>
             );
             
-            window.experiment.start_current_trial();
+            window.experiment.begin();
         });
     </script>
 </head>

@@ -257,7 +257,3 @@ trial.disables = {
         return document.querySelectorAll(this.submit_selectors.join(","));
     },
 };
-
-window.addEventListener("load", function() {
-    trial.init();
-});
