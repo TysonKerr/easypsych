@@ -1,6 +1,12 @@
-99 inline-scripts-and-stylesheets 0
+99 inline-scripts-and-stylesheets 1
 
 Previous Commit info:
-2020-01-30 14:55:36 -0500
-e063fa76656d4c4f699c19569666fdbad3557a37
-removed another console log
+2020-01-30 21:03:35 -0500
+3820146f4fc89e14bb356a724dac7ee0f9f585b2
+script and link files are moved inline for trials
+
+affects the general trial template
+also affects each trial type display template
+
+eliminates need for server requests on each trial
+also prevents caching problems when editing files

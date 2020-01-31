@@ -184,8 +184,17 @@ Experiment.prototype = {
     },
     
     begin: function() {
-        this.trial_display.ready.then(() => this.start_current_trial());
-    }
+        this.trial_display.ready.then(() => {
+            this.trial_display.make_templates(this.get_used_trial_types());
+            this.start_current_trial();
+        });
+    },
+    
+    get_used_trial_types: function() {
+        return this.data.procedure
+            .map(trial => trial["Trial Type"])
+            .filter((type, i, arr) => i === arr.indexOf(type));
+    },
 };
 
 Experiment.prototype.Trial_Display = function(container, trial_template, trial_types) {
@@ -215,35 +224,14 @@ Experiment.prototype.Trial_Display.prototype = {
             trial_values = {stimuli: [], procedure: {"Trial Type": "end-of-experiment"}};
         }
         
-        let trial_type = this.trial_types[trial_values.procedure["Trial Type"]];
-        let trial = this.template;
+        const trial_type = this.trial_types[trial_values.procedure["Trial Type"]];
         
-        trial = this.move_links_to_head(trial);
+        if (!("template" in trial_type)) this.make_template(trial_values.procedure["Trial Type"]);
         
-        if ("style" in trial_type) {
-            trial = trial.replace(/<\/head>/, "<style>" + trial_type.style + "</style></head>");
-        }
-        
-        if ("script" in trial_type) {
-            trial = trial.replace(/<\/body>/, "<script>" + trial_type.script + "</script></body>");
-        }
-        
-        trial = trial.replace(/@{trial_contents}/, trial_type.display);
-        trial = trial.replace(/"@{trial_values}"/, JSON.stringify(trial_values));
-        trial = this.interpolate_trial_values(trial, trial_values);
-        
-        return trial;
-    },
-    
-    move_links_to_head: function(doc) {
-        let links = [];
-        
-        doc = doc.replace(/<link[^>]*>/g, function(match) {
-            links.push(match);
-            return "";
-        });
-        
-        return doc.replace(/<\/head>/, links.join("") + "</head>");
+        let page = trial_type.template;
+        page = page.replace(/"@{trial_values}"/, JSON.stringify(trial_values));
+        page = this.interpolate_trial_values(page, trial_values);
+        return page;
     },
     
     interpolate_trial_values: function(template, values) {
@@ -322,6 +310,26 @@ Experiment.prototype.Trial_Display.prototype = {
         }
         
         return resources;
+    },
+    
+    make_templates: function(names) {
+        names.forEach(name => this.make_template(name));
+    },
+    
+    make_template: function(name) {
+        let template = this.template;
+        const type = this.trial_types[name];
+        
+        if ("style" in type) {
+            template = template.replace(/<\/head>/, "<style>\n" + type.style + "\n</style>\n</head>");
+        }
+        
+        if ("script" in type) {
+            template = template.replace(/<\/body>/, "<script>\n" + type.script + "\n<\/script>\n</body>");
+        }
+        
+        template = template.replace(/@{trial_contents}/, type.display);
+        type.template = template;
     }
 };
 
